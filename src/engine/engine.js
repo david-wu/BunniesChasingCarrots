@@ -1,27 +1,24 @@
 var Food = require('../units/food.js');
 var Hunter = require('../units/hunter.js');
+var Forest = require('../units/forest.js');
+var QuadNode = require('../services/quadTree.js');
 
 function Engine(ctx, canvas){
   var that = this;
+
   this.ctx = ctx;
   this.canvas = canvas;
 
   this.units = [];
-  _.times(20, function(){
-    that.units.push(new Food());
+  _.times(100, function(){
+    new Food(that.units);
   });
-  _.times(2, function(){
-    that.units.push(new Hunter());
+  _.times(5, function(){
+    new Hunter(that.units);
   });
-
-  _.each(this.units, function(unit){
-    unit.on('destroy', function(){
-      var index = that.units.indexOf(unit);
-      if(index !== -1){
-        that.units.splice(index, 1);
-      }
-    })
-  })
+  _.times(1, function(){
+    new Forest(that.units);
+  });
 
   this.mapCenter = [0,0];
 }
@@ -29,11 +26,31 @@ function Engine(ctx, canvas){
 Engine.prototype.step = function(){
   var that = this;
   _.each(this.units, function(unit){
-    unit.emit('step', that.units);
+    if(unit){
+      unit.emit('step', that.units);
+    }
   });
 };
 
 Engine.prototype.checkCollision = function(){
+  var qn = new QuadNode({
+    contents: this.units,
+    bounds: [-1000,-1000,1000,1000],
+  });
+  qn.divide();
+
+  for(var i = 0; i < this.units.length-1; i++){
+    for(var j = i+1; j < this.units.length; j++){
+      if(this.units[i].distanceFrom(this.units[j]) < (this.units[i].radius + this.units[j].radius)){
+        if(this.units[i] && this.units[j]){
+          this.units[i].emit('collision', this.units[j]);
+        }
+        if(this.units[i] && this.units[j]){
+          this.units[j].emit('collision', this.units[i]);
+        }
+      }
+    }
+  }
 };
 
 Engine.prototype.drawAll = function(){

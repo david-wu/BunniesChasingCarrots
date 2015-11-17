@@ -1,19 +1,31 @@
 var Emitter = require('../services/emitter.js');
 var Vector = require('../services/vector.js');
 
-function BaseUnit(){
+function BaseUnit(unitGroup){
     _.defaults(this,{
         pos: new Vector({magnitude:0, radians:0}),
         vel: new Vector({magnitude:0, radians:0}),
-        maxVelocity: 10,
+        opacity: 1,
+        maxVelocity: 2,
         drag: 0.1,
-        radius: 10,
+        radius: 2,
         color: 'green',
         age: 0,
+        attributes: [],
+        commands: [],
     });
     Emitter(this);
+    this.unitGroup = unitGroup;
+    this.unitGroup.push(this);
+    this.on('step', this.step.bind(this));
+    this.on('destroy', this.destroy.bind(this));
+}
 
-    this.on('step', this.step.bind(this))
+BaseUnit.prototype.destroy = function(){
+    var index = this.unitGroup.indexOf(this);
+    if(index !== -1){
+        this.unitGroup.splice(index, 1);
+    }
 }
 
 BaseUnit.prototype.step = function(){
@@ -38,13 +50,23 @@ BaseUnit.prototype.closestUnit = function(units){
     var that = this;
     return _.min(units, function(unit){
         if(unit === that){return;}
-        return that.pos.distanceFrom(unit.pos);
+        return that.distanceFrom(unit);
     });
 };
+
+BaseUnit.prototype.distanceFrom = function(unit){
+    return this.pos.distanceFrom(unit.pos);
+}
+
+BaseUnit.prototype.hitBox = function(unit){
+    var coords = this.pos.toCoord();
+    return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
+}
 
 BaseUnit.prototype.draw = function(ctx, posShift){
     var posCoord = this.pos.toCoord();
     ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.opacity;
     ctx.beginPath();
     ctx.arc(posCoord[0]-posShift[0], posCoord[1]-posShift[1], this.radius, 0, 2 * Math.PI, false);
     ctx.fill();

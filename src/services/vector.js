@@ -45,7 +45,14 @@ Vector.prototype.subtract = function(v2){
 }
 
 Vector.prototype.distanceFrom = function(v2){
-    return this.subtract(v2).magnitude;
+    var v1Coord = this.toCoord();
+    var v2Coord = v2.toCoord();
+    var coords = [];
+
+    for(var i = 0; i < v1Coord.length; i++){
+        coords.push(v2Coord[i]-v1Coord[i]);
+    }
+    return Math.hypot.apply(null, coords)
 }
 
 Vector.prototype.inverse = function(){
