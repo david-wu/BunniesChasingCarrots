@@ -1,11 +1,11 @@
 var Food = require('./food.js');
 var BaseUnit = require('./_baseUnit.js')
 
-function Forest(){
+function Forest(unitGroup, options){
 
     BaseUnit.apply(this, arguments);
     _.extend(this, {
-        radius: 150,
+        radius: 300,
         color: 'green',
         opacity: 0.1,
         maxVelocity: 2,
@@ -15,6 +15,7 @@ function Forest(){
             radians: Math.random()*2*Math.PI,
         })
     });
+    _.extend(this, options)
 
     this.on('step', this.spawnFood.bind(this));
 }
@@ -22,7 +23,7 @@ function Forest(){
 Forest.prototype = Object.create(BaseUnit.prototype)
 
 Forest.prototype.spawnFood = function(units){
-    if(Math.random() < 0.03){
+    if(Math.random() < 0.5){
         var foodPos = this.pos.add(new Vector({
             magnitude: this.radius*Math.random(),
             degrees: 360*Math.random(),

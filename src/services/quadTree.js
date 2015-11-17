@@ -7,8 +7,24 @@ function QuadNode(options){
     _.defaults(this, {
         bounds: [0,0,10,10],
         contents: [],
+        children: [],
     });
     _.extend(this, options);
+}
+
+QuadNode.prototype.allChildren = function(){
+    var allChildren
+
+    if(this.contents.length){
+        return [this];
+    }
+    if(!this.children.length){
+        return [];
+    }
+
+    return _.flatten(_.map(this.children, function(child){
+        return child.allChildren();
+    }))
 }
 
 QuadNode.prototype.divide = function(){

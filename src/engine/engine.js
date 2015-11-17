@@ -10,10 +10,10 @@ function Engine(ctx, canvas){
   this.canvas = canvas;
 
   this.units = [];
-  _.times(100, function(){
+  _.times(0, function(){
     new Food(that.units);
   });
-  _.times(5, function(){
+  _.times(50, function(){
     new Hunter(that.units);
   });
   _.times(1, function(){
@@ -39,18 +39,33 @@ Engine.prototype.checkCollision = function(){
   });
   qn.divide();
 
-  for(var i = 0; i < this.units.length-1; i++){
-    for(var j = i+1; j < this.units.length; j++){
-      if(this.units[i].distanceFrom(this.units[j]) < (this.units[i].radius + this.units[j].radius)){
-        if(this.units[i] && this.units[j]){
-          this.units[i].emit('collision', this.units[j]);
-        }
-        if(this.units[i] && this.units[j]){
-          this.units[j].emit('collision', this.units[i]);
+  _.each(qn.allChildren(), function(quadNode){
+    var contents = quadNode.contents;
+    for(var i = 0; i < contents.length-1; i++){
+      for(var j = i+1; j < contents.length; j++){
+        if(contents[i].distanceFrom(contents[j]) < (contents[i].radius + contents[j].radius)){
+          if(contents[i] && contents[j]){
+            contents[i].emit('collision', contents[j]);
+          }
+          if(contents[i] && contents[j]){
+            contents[j].emit('collision', contents[i]);
+          }
         }
       }
     }
-  }
+  })
+  // for(var i = 0; i < this.units.length-1; i++){
+  //   for(var j = i+1; j < this.units.length; j++){
+  //     if(this.units[i].distanceFrom(this.units[j]) < (this.units[i].radius + this.units[j].radius)){
+  //       if(this.units[i] && this.units[j]){
+  //         this.units[i].emit('collision', this.units[j]);
+  //       }
+  //       if(this.units[i] && this.units[j]){
+  //         this.units[j].emit('collision', this.units[i]);
+  //       }
+  //     }
+  //   }
+  // }
 };
 
 Engine.prototype.drawAll = function(){
