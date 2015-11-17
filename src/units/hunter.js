@@ -36,24 +36,40 @@ Hunter.prototype.hunt = function(units){
         this.hunting = false;
     }
 
-    var allFoodCandidates = _.filter(units, function(unit){
-        return _.includes(unit.type, 'food');
-    });
-    var unclaimedFoodCandidates = _.reject(allFoodCandidates, 'hunted');
 
-    // Stop hunting if no candidates
-    if(!allFoodCandidates.length){
+
+    var foodCandidate = this.closestUnit(function(unit){
+        if(unit === that){return;}
+        return _.includes(unit.type, 'food') && !unit.hunted;
+    })
+
+    if(!foodCandidate){
         this.vel = new Vector({magnitude: 0});
         this.hunting = false;
         return;
     }
+    this.huntUnit(foodCandidate);
 
-    // Prefer hunting unclaimedFoodCandidates
-    if(unclaimedFoodCandidates.length){
-        this.huntUnit(this.closestUnit(unclaimedFoodCandidates));
-    }else{
-        this.huntUnit(this.closestUnit(allFoodCandidates));
-    }
+
+
+    // var allFoodCandidates = _.filter(units, function(unit){
+    //     return _.includes(unit.type, 'food');
+    // });
+    // var unclaimedFoodCandidates = _.reject(allFoodCandidates, 'hunted');
+
+    // // Stop hunting if no candidates
+    // if(!allFoodCandidates.length){
+    //     this.vel = new Vector({magnitude: 0});
+    //     this.hunting = false;
+    //     return;
+    // }
+
+    // // Prefer hunting unclaimedFoodCandidates
+    // if(unclaimedFoodCandidates.length){
+    //     this.huntUnit(this.closestUnit(unclaimedFoodCandidates));
+    // }else{
+    //     this.huntUnit(this.closestUnit(allFoodCandidates));
+    // }
 };
 
 Hunter.prototype.huntUnit = function(unit){

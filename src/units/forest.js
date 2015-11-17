@@ -23,7 +23,7 @@ function Forest(unitGroup, options){
 Forest.prototype = Object.create(BaseUnit.prototype)
 
 Forest.prototype.spawnFood = function(units){
-    if(Math.random() < 0.5){
+    // if(Math.random() < 0.5){
         var foodPos = this.pos.add(new Vector({
             magnitude: this.radius*Math.random(),
             degrees: 360*Math.random(),
@@ -31,7 +31,7 @@ Forest.prototype.spawnFood = function(units){
         units.push(new Food(this.unitGroup, {
             pos: foodPos
         }));
-    }
+    // }
 }
 
 module.exports = Forest;

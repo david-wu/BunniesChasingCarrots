@@ -1,27 +1,28 @@
 var Food = require('../units/food.js');
 var Hunter = require('../units/hunter.js');
 var Forest = require('../units/forest.js');
-var QuadNode = require('../services/quadTree.js');
+var QuadNode = require('../services/quadNode.js');
 
 function Engine(ctx, canvas){
-  var that = this;
-
   this.ctx = ctx;
   this.canvas = canvas;
-
   this.units = [];
+  this.mapCenter = [0,0];
+  this.createInitialUnits();
+}
+
+Engine.prototype.createInitialUnits = function(){
+  var that = this;
   _.times(0, function(){
     new Food(that.units);
   });
-  _.times(50, function(){
+  _.times(100, function(){
     new Hunter(that.units);
   });
   _.times(1, function(){
     new Forest(that.units);
   });
-
-  this.mapCenter = [0,0];
-}
+};
 
 Engine.prototype.step = function(){
   var that = this;
@@ -33,51 +34,62 @@ Engine.prototype.step = function(){
 };
 
 Engine.prototype.checkCollision = function(){
-  var qn = new QuadNode({
-    contents: this.units,
-    bounds: [-1000,-1000,1000,1000],
-  });
-  qn.divide();
+  var that = this;
 
-  _.each(qn.allChildren(), function(quadNode){
-    var contents = quadNode.contents;
-    for(var i = 0; i < contents.length-1; i++){
-      for(var j = i+1; j < contents.length; j++){
-        if(contents[i].distanceFrom(contents[j]) < (contents[i].radius + contents[j].radius)){
-          if(contents[i] && contents[j]){
-            contents[i].emit('collision', contents[j]);
+  this.qn = new QuadNode({
+    contents: this.units,
+    bounds: [-(that.canvas.width/2),-(that.canvas.height/2),(that.canvas.width/2),(that.canvas.height/2)],
+  });
+  this.qn.divide();
+  this.contents = this.qn.allContents();
+
+  _.each(this.contents, function(content){
+    for(var i = 0; i < content.length-1; i++){
+      for(var j = i+1; j < content.length; j++){
+        if(content[i].distanceFrom(content[j]) < (content[i].radius + content[j].radius)){
+          if(content[i] && content[j]){
+            content[i].emit('collision', content[j]);
           }
-          if(contents[i] && contents[j]){
-            contents[j].emit('collision', contents[i]);
+          if(content[i] && content[j]){
+            content[j].emit('collision', content[i]);
           }
         }
       }
     }
   })
-  // for(var i = 0; i < this.units.length-1; i++){
-  //   for(var j = i+1; j < this.units.length; j++){
-  //     if(this.units[i].distanceFrom(this.units[j]) < (this.units[i].radius + this.units[j].radius)){
-  //       if(this.units[i] && this.units[j]){
-  //         this.units[i].emit('collision', this.units[j]);
-  //       }
-  //       if(this.units[i] && this.units[j]){
-  //         this.units[j].emit('collision', this.units[i]);
-  //       }
-  //     }
-  //   }
-  // }
 };
 
 Engine.prototype.drawAll = function(){
   var that = this;
 
   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
   var centerX = that.mapCenter[0] - (that.canvas.width/2)
   var centerY = that.mapCenter[1] - (that.canvas.height/2);
   _.each(this.units, function(unit){
     unit.draw(that.ctx, [centerX, centerY]);
   });
+
+  // this.drawQuadNodes(centerX, centerY)
 };
+
+Engine.prototype.drawQuadNodes = function(centerX, centerY){
+  var that = this;
+  centerX = centerX || that.mapCenter[0] - (that.canvas.width/2)
+  centerY = centerY || that.mapCenter[1] - (that.canvas.height/2);
+
+  var allQuadNodes =this.qn.allChildren();
+  _.each(allQuadNodes, function(quadNode){
+    var bounds = quadNode.bounds;
+    bounds[0]-=centerX;
+    bounds[1]-=centerY;
+    bounds[2]-=centerX;
+    bounds[3]-=centerY;
+    that.ctx.rect.apply(that.ctx, bounds);
+    that.ctx.stroke();
+  })
+
+}
 
 Engine.prototype.start = function(){
   var that = this;
@@ -87,8 +99,8 @@ Engine.prototype.start = function(){
 };
 
 Engine.prototype.tick = function(){
-  this.step();
   this.checkCollision();
+  this.step();
   this.drawAll();
 };
 

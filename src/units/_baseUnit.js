@@ -46,13 +46,34 @@ BaseUnit.prototype.goto = function(pos){
     }
 }
 
-BaseUnit.prototype.closestUnit = function(units){
+// Finds closestUnit by traversing the quadTree
+BaseUnit.prototype.closestUnit = function(unitFilter){
     var that = this;
-    return _.min(units, function(unit){
-        if(unit === that){return;}
+    unitFilter = unitFilter || function(unit){
+        if(unit === that){return false;}
+        return true;
+    }
+
+    var candidates = [];
+    var currentNode = this.quadNode;
+    while(!candidates.length && currentNode){
+        candidates = _.filter(_.flatten(currentNode.allContents()), unitFilter);
+        currentNode = currentNode.parent;
+    }
+
+    if(!candidates.length){return;}
+    return _.min(candidates, function(unit){
         return that.distanceFrom(unit);
-    });
+    })
 };
+
+// BaseUnit.prototype.closestUnit = function(units){
+//     var that = this;
+//     return _.min(units, function(unit){
+//         if(unit === that){return;}
+//         return that.distanceFrom(unit);
+//     });
+// };
 
 BaseUnit.prototype.distanceFrom = function(unit){
     return this.pos.distanceFrom(unit.pos);
