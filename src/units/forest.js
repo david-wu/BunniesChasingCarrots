@@ -11,9 +11,8 @@ function Forest(unitGroup, options){
         maxVelocity: 2,
         type: ['forest'],
         pos: new Vector({
-            magnitude: Math.random()*300,
-            radians: Math.random()*2*Math.PI,
-        })
+            coords: [0,0],
+        }),
     });
     _.extend(this, options)
 

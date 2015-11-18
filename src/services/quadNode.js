@@ -11,16 +11,13 @@ function QuadNode(options){
 }
 
 QuadNode.prototype.allChildren = function(){
-    if(this.contents.length){
-        return [this];
-    }
     if(!this.children.length){
         return [this];
     }
     return _.flatten(_.map(this.children, function(child){
         return child.allChildren();
     }));
-}
+};
 
 QuadNode.prototype.allContents = function(){
     if(this.contents.length){
@@ -29,12 +26,12 @@ QuadNode.prototype.allContents = function(){
     if(!this.children.length){
         return [];
     }
-
     return _.flatten(_.map(this.children, function(child){
         return child.allContents();
     }));
-}
+};
 
+// Divides into 4 nodes until each node contains less than 10 units or maximum depth is reached
 QuadNode.prototype.divide = function(){
     this.children = [
         new QuadNode({
@@ -58,16 +55,17 @@ QuadNode.prototype.divide = function(){
             bounds: [(this.bounds[2]+this.bounds[0])/2, (this.bounds[3]+this.bounds[1])/2, this.bounds[2], this.bounds[3]],
         }),
     ];
+
     this.divideContents();
 
-    // Divides until each node contains 10 or less units or maximum depth is reached
     _.each(this.children, function(child){
-        if(child.contents.length > 10 && child.depth<10){
+        if(child.contents.length > 10 && child.depth<8){
             child.divide();
         }
     });
 };
 
+// Divides contents into the 4 quadNode children
 QuadNode.prototype.divideContents = function(){
     if(!this.children.length){return;}
     var that = this;
@@ -75,15 +73,20 @@ QuadNode.prototype.divideContents = function(){
     _.each(this.contents, function(unit){
         var unitBox = unit.hitBox()
         _.each(that.children, function(child){
-            if(unitBox[0] < child.bounds[2] && unitBox[2] > child.bounds[0]){
-                if(unitBox[1] < child.bounds[3] && unitBox[3] > child.bounds[1]){
-                    child.contents.push(unit);
-                    unit.quadNode = child;
-                }
+            if(child.contains(unitBox)){
+                child.contents.push(unit);
             }
         });
     });
     this.contents = [];
+};
+
+QuadNode.prototype.contains = function(unitBox){
+    if(unitBox[0] < this.bounds[2] && unitBox[2] > this.bounds[0]){
+        if(unitBox[1] < this.bounds[3] && unitBox[3] > this.bounds[1]){
+            return true;
+        }
+    }
 };
 
 module.exports = QuadNode;

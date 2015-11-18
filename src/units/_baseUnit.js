@@ -1,5 +1,4 @@
 var Emitter = require('../services/emitter.js');
-var Vector = require('../services/vector.js');
 
 function BaseUnit(unitGroup){
     _.defaults(this,{
@@ -30,50 +29,54 @@ BaseUnit.prototype.destroy = function(){
 
 BaseUnit.prototype.step = function(){
     this.pos = this.pos.add(this.vel);
-    this.vel.magnitude = this.vel.magnitude * (1-this.drag);
+    this.vel.applyLinearDrag(this.drag);
+    // this.vel.magnitude = this.vel.magnitude * (1-this.drag);
     this.age++;
 }
 
 // Changes unit's velocity to go towards a position vector
 BaseUnit.prototype.goto = function(pos){
-    this.vel = pos.subtract(this.pos);
+    if(!pos){return;}
+    // console.log(this.pos)
 
+    this.vel = pos.subtract(this.pos);
+    this.vel = this.vel.setMagnitude(this.maxVelocity)
     // Slows down to not overshoot
-    if(this.vel.magnitude < this.maxVelocity*10){
-        this.vel.magnitude /= 10;
-    }else{
-        this.vel.magnitude = this.maxVelocity;
-    }
+    // if(this.vel.magnitude < this.maxVelocity*10){
+    //     this.vel.magnitude /= 10;
+    // }else{
+    //     this.vel.magnitude = this.maxVelocity;
+    // }
 }
 
-// Finds closestUnit by traversing the quadTree
-BaseUnit.prototype.closestUnit = function(unitFilter){
-    var that = this;
-    unitFilter = unitFilter || function(unit){
-        if(unit === that){return false;}
-        return true;
-    }
-
-    var candidates = [];
-    var currentNode = this.quadNode;
-    while(!candidates.length && currentNode){
-        candidates = _.filter(_.flatten(currentNode.allContents()), unitFilter);
-        currentNode = currentNode.parent;
-    }
-
-    if(!candidates.length){return;}
-    return _.min(candidates, function(unit){
-        return that.distanceFrom(unit);
-    })
-};
-
-// BaseUnit.prototype.closestUnit = function(units){
+// // Finds closestUnit by traversing the quadTree
+// BaseUnit.prototype.closestUnit = function(unitFilter){
 //     var that = this;
-//     return _.min(units, function(unit){
-//         if(unit === that){return;}
+//     unitFilter = unitFilter || function(unit){
+//         if(unit === that){return false;}
+//         return true;
+//     }
+
+//     var candidates = [];
+//     var currentNode = this.quadNode;
+//     while(!candidates.length && currentNode){
+//         candidates = _.filter(_.flatten(currentNode.allContents()), unitFilter);
+//         currentNode = currentNode.parent;
+//     }
+
+//     if(!candidates.length){return;}
+//     return _.min(candidates, function(unit){
 //         return that.distanceFrom(unit);
-//     });
+//     })
 // };
+
+BaseUnit.prototype.closestUnit = function(units){
+    var that = this;
+    return _.min(units, function(unit){
+        if(unit === that){return;}
+        return that.distanceFrom(unit);
+    });
+};
 
 BaseUnit.prototype.distanceFrom = function(unit){
     return this.pos.distanceFrom(unit.pos);

@@ -8,6 +8,7 @@ function Engine(ctx, canvas){
   this.canvas = canvas;
   this.units = [];
   this.mapCenter = [0,0];
+
   this.createInitialUnits();
 }
 
@@ -16,20 +17,11 @@ Engine.prototype.createInitialUnits = function(){
   _.times(0, function(){
     new Food(that.units);
   });
-  _.times(100, function(){
+  _.times(75, function(){
     new Hunter(that.units);
   });
   _.times(1, function(){
     new Forest(that.units);
-  });
-};
-
-Engine.prototype.step = function(){
-  var that = this;
-  _.each(this.units, function(unit){
-    if(unit){
-      unit.emit('step', that.units);
-    }
   });
 };
 
@@ -59,6 +51,15 @@ Engine.prototype.checkCollision = function(){
   })
 };
 
+Engine.prototype.step = function(){
+  var that = this;
+  _.each(this.units, function(unit){
+    if(unit){
+      unit.emit('step', that.units);
+    }
+  });
+};
+
 Engine.prototype.drawAll = function(){
   var that = this;
 
@@ -70,26 +71,25 @@ Engine.prototype.drawAll = function(){
     unit.draw(that.ctx, [centerX, centerY]);
   });
 
-  // this.drawQuadNodes(centerX, centerY)
+  this.drawQuadNodes(centerX, centerY);
 };
 
 Engine.prototype.drawQuadNodes = function(centerX, centerY){
   var that = this;
-  centerX = centerX || that.mapCenter[0] - (that.canvas.width/2)
+  centerX = centerX || that.mapCenter[0] - (that.canvas.width/2);
   centerY = centerY || that.mapCenter[1] - (that.canvas.height/2);
 
-  var allQuadNodes =this.qn.allChildren();
+  var allQuadNodes = this.qn.allChildren();
   _.each(allQuadNodes, function(quadNode){
-    var bounds = quadNode.bounds;
+    var bounds = quadNode.bounds.slice();
     bounds[0]-=centerX;
     bounds[1]-=centerY;
     bounds[2]-=centerX;
     bounds[3]-=centerY;
-    that.ctx.rect.apply(that.ctx, bounds);
+    that.ctx.rect(bounds[0], bounds[1], bounds[2]-bounds[0], bounds[3]-bounds[1]);
     that.ctx.stroke();
-  })
-
-}
+  });
+};
 
 Engine.prototype.start = function(){
   var that = this;
