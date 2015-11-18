@@ -59,7 +59,7 @@ QuadNode.prototype.divide = function(){
     this.divideContents();
 
     _.each(this.children, function(child){
-        if(child.contents.length > 10 && child.depth<8){
+        if(child.contents.length > 8 && child.depth<7){
             child.divide();
         }
     });

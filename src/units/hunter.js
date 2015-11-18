@@ -28,6 +28,7 @@ Hunter.prototype = Object.create(BaseUnit.prototype);
 
 
 Hunter.prototype.hunt = function(units){
+    if(this.age%10!==0){return}
     var that = this;
 
     // stops hunting previous target

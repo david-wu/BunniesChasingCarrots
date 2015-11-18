@@ -30,23 +30,14 @@ BaseUnit.prototype.destroy = function(){
 BaseUnit.prototype.step = function(){
     this.pos = this.pos.add(this.vel);
     this.vel.applyLinearDrag(this.drag);
-    // this.vel.magnitude = this.vel.magnitude * (1-this.drag);
     this.age++;
 }
 
 // Changes unit's velocity to go towards a position vector
 BaseUnit.prototype.goto = function(pos){
     if(!pos){return;}
-    // console.log(this.pos)
-
     this.vel = pos.subtract(this.pos);
     this.vel = this.vel.setMagnitude(this.maxVelocity)
-    // Slows down to not overshoot
-    // if(this.vel.magnitude < this.maxVelocity*10){
-    //     this.vel.magnitude /= 10;
-    // }else{
-    //     this.vel.magnitude = this.maxVelocity;
-    // }
 }
 
 // // Finds closestUnit by traversing the quadTree
@@ -83,12 +74,12 @@ BaseUnit.prototype.distanceFrom = function(unit){
 }
 
 BaseUnit.prototype.hitBox = function(unit){
-    var coords = this.pos.toCoord();
+    var coords = this.pos.coords;
     return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
 }
 
 BaseUnit.prototype.draw = function(ctx, posShift){
-    var posCoord = this.pos.toCoord();
+    var posCoord = this.pos.coords;
     ctx.fillStyle = this.color;
     ctx.globalAlpha = this.opacity;
     ctx.beginPath();
