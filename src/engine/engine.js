@@ -71,7 +71,7 @@ Engine.prototype.drawAll = function(){
     unit.draw(that.ctx, [centerX, centerY]);
   });
 
-  this.drawQuadNodes(centerX, centerY);
+  // this.drawQuadNodes(centerX, centerY);
 };
 
 Engine.prototype.drawQuadNodes = function(centerX, centerY){

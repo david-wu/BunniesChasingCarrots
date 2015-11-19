@@ -21,16 +21,21 @@ function Forest(unitGroup, options){
 
 Forest.prototype = Object.create(BaseUnit.prototype)
 
+// Forest.prototype.step = function(){
+//     if(Math.random() < 1){
+//         this.spawnFood()
+//     }
+// }
+
 Forest.prototype.spawnFood = function(units){
-    // if(Math.random() < 0.5){
-        var foodPos = this.pos.add(new Vector({
-            magnitude: this.radius*Math.random(),
-            degrees: 360*Math.random(),
-        }))
-        units.push(new Food(this.unitGroup, {
-            pos: foodPos
-        }));
-    // }
+    // Randomly spawns a food within this.radius
+    var foodPos = this.pos.add(new Vector({
+        magnitude: this.radius*Math.random(),
+        degrees: 360*Math.random(),
+    }))
+    units.push(new Food(this.unitGroup, {
+        pos: foodPos
+    }));
 }
 
 module.exports = Forest;

@@ -21,11 +21,25 @@ function Hunter(){
             unit.emit('destroy')
         }
     });
+
+    var that = this;
+    this.sees = [];
+    this.vision = new BaseUnit(this.unitGroup)
+    _.extend(this.vision, {
+        pos: undefined,
+        parent: this,
+        color: 'blue',
+        opacity: 0.05,
+        radius: 50,
+    });
+    this.vision.on('collision', function(unit){
+        if(_.includes(unit.type, 'food')){
+            that.sees.push(unit);
+        }
+    });
 }
 
-
 Hunter.prototype = Object.create(BaseUnit.prototype);
-
 
 Hunter.prototype.hunt = function(units){
     if(this.age%10!==0){return}
@@ -37,7 +51,7 @@ Hunter.prototype.hunt = function(units){
         this.hunting = false;
     }
 
-    var allFoodCandidates = _.filter(units, function(unit){
+    var allFoodCandidates = _.filter(this.sees, function(unit){
         return _.includes(unit.type, 'food');
     });
     var unclaimedFoodCandidates = _.reject(allFoodCandidates, 'hunted');
@@ -53,9 +67,12 @@ Hunter.prototype.hunt = function(units){
     if(unclaimedFoodCandidates.length){
         this.huntUnit(this.closestUnit(unclaimedFoodCandidates));
     }else{
-        this.huntUnit(this.closestUnit(allFoodCandidates));
+        // this.huntUnit(this.closestUnit(allFoodCandidates));
     }
+    this.sees = [];
 };
+
+Hunter.prototype.wander = function(){}
 
 Hunter.prototype.huntUnit = function(unit){
     this.hunting = unit;

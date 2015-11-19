@@ -18,6 +18,15 @@ function BaseUnit(unitGroup){
     this.unitGroup.push(this);
     this.on('step', this.step.bind(this));
     this.on('destroy', this.destroy.bind(this));
+    // this.on('collision', this.reverseVel.bind(this));
+
+}
+
+BaseUnit.prototype.step = function(){
+    if(!this.pos){return;}
+    this.pos = this.pos.add(this.vel);
+    this.vel.applyLinearDrag(this.drag);
+    this.age++;
 }
 
 BaseUnit.prototype.destroy = function(){
@@ -27,10 +36,10 @@ BaseUnit.prototype.destroy = function(){
     }
 }
 
-BaseUnit.prototype.step = function(){
-    this.pos = this.pos.add(this.vel);
-    this.vel.applyLinearDrag(this.drag);
-    this.age++;
+BaseUnit.prototype.reverseVel = function(pos){
+    this.vel = new Vector({
+        coords: _.map(this.vel.coords, function(d){return -d;})
+    });
 }
 
 // Changes unit's velocity to go towards a position vector
@@ -39,27 +48,6 @@ BaseUnit.prototype.goto = function(pos){
     this.vel = pos.subtract(this.pos);
     this.vel = this.vel.setMagnitude(this.maxVelocity)
 }
-
-// // Finds closestUnit by traversing the quadTree
-// BaseUnit.prototype.closestUnit = function(unitFilter){
-//     var that = this;
-//     unitFilter = unitFilter || function(unit){
-//         if(unit === that){return false;}
-//         return true;
-//     }
-
-//     var candidates = [];
-//     var currentNode = this.quadNode;
-//     while(!candidates.length && currentNode){
-//         candidates = _.filter(_.flatten(currentNode.allContents()), unitFilter);
-//         currentNode = currentNode.parent;
-//     }
-
-//     if(!candidates.length){return;}
-//     return _.min(candidates, function(unit){
-//         return that.distanceFrom(unit);
-//     })
-// };
 
 BaseUnit.prototype.closestUnit = function(units){
     var that = this;
@@ -70,16 +58,20 @@ BaseUnit.prototype.closestUnit = function(units){
 };
 
 BaseUnit.prototype.distanceFrom = function(unit){
-    return this.pos.distanceFrom(unit.pos);
+    var pos1 = this.pos || this.parent.pos;
+    var pos2 = unit.pos || unit.parent.pos;
+    return pos1.distanceFrom(pos2);
 }
 
 BaseUnit.prototype.hitBox = function(unit){
-    var coords = this.pos.coords;
+    var pos = this.pos || this.parent.pos;
+    var coords = pos.coords;
     return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
 }
 
 BaseUnit.prototype.draw = function(ctx, posShift){
-    var posCoord = this.pos.coords;
+    var pos = this.pos || this.parent.pos;
+    var posCoord = pos.coords;
     ctx.fillStyle = this.color;
     ctx.globalAlpha = this.opacity;
     ctx.beginPath();

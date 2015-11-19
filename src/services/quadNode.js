@@ -58,8 +58,10 @@ QuadNode.prototype.divide = function(){
 
     this.divideContents();
 
+    // Max contents length and max depth is should be determined by:
+    // Size of resulting smallest quadNode vs size of units
     _.each(this.children, function(child){
-        if(child.contents.length > 8 && child.depth<7){
+        if(child.contents.length > 20 && child.depth<5){
             child.divide();
         }
     });
