@@ -1,24 +1,27 @@
 
 
 
-function Wanderer(unit){
-
-    var scope = unit || {};
-    _.defaults(scope, {
-        age: 0,
-    });
+function Wanderer(unit, scope){
 
     unit.wander = function(){
-        if(scope.age % 100 === 0){
-            wander.apply(scope, arguments)
-        }
+        var stopWander = wander.apply(unit, arguments)
+    }
+
+    unit.stopWander = function(){
+        stopWander.apply(unit, arguments)
     }
 
 }
 
-function wander(units){
+function wander(){
+
     this.vel = new Vector({
         degrees: Math.random()*360,
         magnitude: this.maxVelocity,
     });
 };
+
+
+function stopWander(){
+
+}

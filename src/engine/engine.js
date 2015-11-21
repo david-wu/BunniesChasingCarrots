@@ -25,6 +25,23 @@ Engine.prototype.createInitialUnits = function(){
   });
 };
 
+Engine.prototype.start = function(){
+  var that = this;
+  this.tickInterval = setInterval(function(){
+    that.tick();
+  }, 16);
+};
+
+Engine.prototype.stop = function(){
+  clearInterval(this.tickInterval);
+};
+
+Engine.prototype.tick = function(){
+  this.checkCollision();
+  this.step();
+  this.drawAll();
+};
+
 Engine.prototype.checkCollision = function(){
   var that = this;
 
@@ -34,16 +51,19 @@ Engine.prototype.checkCollision = function(){
   });
   this.qn.divide();
   this.contents = this.qn.allContents();
-
   _.each(this.contents, function(content){
+    var unit1;
+    var unit2;
     for(var i = 0; i < content.length-1; i++){
       for(var j = i+1; j < content.length; j++){
-        if(content[i].distanceFrom(content[j]) < (content[i].radius + content[j].radius)){
-          if(content[i] && content[j]){
-            content[i].emit('collision', content[j]);
+        unit1 = content[i];
+        unit2 = content[j]
+        if(unit1.distanceFrom(unit2) < (unit1.radius + unit2.radius)){
+          if(unit1 && unit2){
+            unit1.emit('collision', unit2);
           }
-          if(content[i] && content[j]){
-            content[j].emit('collision', content[i]);
+          if(unit1 && unit2){
+            unit2.emit('collision', unit1);
           }
         }
       }
@@ -71,7 +91,7 @@ Engine.prototype.drawAll = function(){
     unit.draw(that.ctx, [centerX, centerY]);
   });
 
-  // this.drawQuadNodes(centerX, centerY);
+  this.drawQuadNodes(centerX, centerY);
 };
 
 Engine.prototype.drawQuadNodes = function(centerX, centerY){
@@ -90,62 +110,6 @@ Engine.prototype.drawQuadNodes = function(centerX, centerY){
     that.ctx.stroke();
   });
 };
-
-Engine.prototype.start = function(){
-  var that = this;
-  this.interval = setInterval(function(){
-    that.tick();
-  }, 16);
-};
-
-Engine.prototype.tick = function(){
-  this.checkCollision();
-  this.step();
-  this.drawAll();
-};
-
-Engine.prototype.stop = function(){
-  clearInterval(this.interval);
-};
-
-// Engine.prototype.bindKeyHandler = function () {
-//   var ship = this.ship
-//   $(window).keydown(function(key){
-//     switch(key.keyCode){
-//     case 32:
-//       ship.useEvade()
-//       break;
-//     case 37:
-//       ship.left_key_pressed = true;
-//       break;
-//     case 38:
-//       ship.up_key_pressed = true;
-//       break;
-//     case 39:
-//       ship.right_key_pressed = true;
-//       break;
-//     case 40:
-//       ship.down_key_pressed = true;
-//       break;
-//     }
-//   })
-//   $(window).keyup(function(key){
-//     switch(key.keyCode){
-//     case 37:
-//       ship.left_key_pressed = false;
-//       break;
-//     case 38:
-//       ship.up_key_pressed = false;
-//       break;
-//     case 39:
-//       ship.right_key_pressed = false;
-//       break;
-//     case 40:
-//       ship.down_key_pressed = false;
-//       break;
-//     }
-//   })
-// }
 
 module.exports = Engine;
 

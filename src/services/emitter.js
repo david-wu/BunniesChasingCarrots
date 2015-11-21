@@ -20,7 +20,7 @@ function Emitter(obj){
 
 function emit(tag){
 
-    // Long-hand for [].slice.call(arguments)
+    // Long-hand for [].slice.call(arguments), then dropping first arg
     var args = [];
     for(var i = 1, l = arguments.length; i < l; i++){
         args.push(arguments[i]);
