@@ -1,7 +1,7 @@
 var Food = require('./food.js');
 var BaseUnit = require('./_baseUnit.js')
 
-function Forest(unitGroup, options){
+function Forest(unitGroups, options){
 
     BaseUnit.apply(this, arguments);
     _.extend(this, {
@@ -11,12 +11,20 @@ function Forest(unitGroup, options){
         maxVelocity: 2,
         type: ['forest'],
         pos: new Vector({
-            coords: [0,0],
+            magnitude: 500,
+            radians: Math.random()*2*Math.PI,
         }),
     });
     _.extend(this, options)
+    this.unitGroup = this.unitGroups.forests;
+    this.unitGroup.push(this);
 
-    this.on('step', this.spawnFood.bind(this));
+    var that = this;
+    this.on('step', function(){
+        if(that.age%3===0){
+            that.spawnFood();
+        }
+    });
 }
 
 Forest.prototype = Object.create(BaseUnit.prototype)
@@ -33,7 +41,7 @@ Forest.prototype.spawnFood = function(units){
         magnitude: this.radius*Math.random(),
         degrees: 360*Math.random(),
     }))
-    units.push(new Food(this.unitGroup, {
+    this.unitGroups.foods.push(new Food(this.unitGroups, {
         pos: foodPos
     }));
 }

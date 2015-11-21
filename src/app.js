@@ -9,4 +9,3 @@ var ctx = canvas.getContext("2d");
 var Engine = require('./engine/engine.js');
 var eng = new Engine(ctx, canvas);
 eng.start();
-

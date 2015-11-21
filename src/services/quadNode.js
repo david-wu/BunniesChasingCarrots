@@ -5,7 +5,6 @@ function QuadNode(options){
     _.defaults(this, {
         bounds: [0,0,10,10],
         contentGroups: [],
-        contents: [],
         children: [],
         depth: 0,
     });
@@ -20,17 +19,18 @@ QuadNode.prototype.allChildren = function(){
     }));
 };
 
-QuadNode.prototype.allContents = function(){
-    if(this.contents.length){
-        return [this.contents];
+QuadNode.prototype.allContentNodes = function(){
+    if(this.contentGroups.length){
+        return [this];
     }
     if(!this.children.length){
         return [];
     }
+
     return _.flatten(_.map(this.children, function(child){
-        return child.allContents();
+        return child.allContentNodes();
     }));
-};
+}
 
 // Divides into 4 nodes until each node contains less than 10 units or maximum depth is reached
 QuadNode.prototype.divide = function(){
@@ -41,52 +41,64 @@ QuadNode.prototype.divide = function(){
     // Max contents length and max depth is should be determined by:
     // Area of smallest quadNode's bounds and size of units
     _.each(this.children, function(child){
-        if(child.contents.length > 20 && child.depth<4){
-            child.divide();
+        if(child.contentGroups[0] && child.contentGroups[1]){
+            if(child.contentGroups[0].length * child.contentGroups[1].length > 100 && child.depth<6){
+                child.divide();
+            }
         }
     });
 };
 
 QuadNode.prototype.createChildren = function(){
     var newDepth = this.depth+1;
+    var bounds0 = this.bounds[0];
+    var bounds1 = this.bounds[1];
+    var bounds2 = this.bounds[2];
+    var bounds3 = this.bounds[3];
+
     this.children = [
         new QuadNode({
             parent: this,
             depth: newDepth,
-            bounds: [this.bounds[0], this.bounds[1], (this.bounds[2]+this.bounds[0])/2, (this.bounds[3]+this.bounds[1])/2],
+            bounds: [bounds0, bounds1, (bounds2+bounds0)/2, (bounds3+bounds1)/2],
         }),
         new QuadNode({
             parent: this,
             depth: newDepth,
-            bounds: [(this.bounds[2]+this.bounds[0])/2, this.bounds[1], this.bounds[2], (this.bounds[3]+this.bounds[1])/2],
+            bounds: [(bounds2+bounds0)/2, bounds1, bounds2, (bounds3+bounds1)/2],
         }),
         new QuadNode({
             parent: this,
             depth: newDepth,
-            bounds: [this.bounds[0], (this.bounds[3]+this.bounds[1])/2, (this.bounds[2]+this.bounds[0])/2, this.bounds[3]],
+            bounds: [bounds0, (bounds3+bounds1)/2, (bounds2+bounds0)/2, bounds3],
         }),
         new QuadNode({
             parent: this,
             depth: newDepth,
-            bounds: [(this.bounds[2]+this.bounds[0])/2, (this.bounds[3]+this.bounds[1])/2, this.bounds[2], this.bounds[3]],
+            bounds: [(bounds2+bounds0)/2, (bounds3+bounds1)/2, bounds2, bounds3],
         }),
     ];
 };
 
 // Divides contents into the 4 quadNode children
 QuadNode.prototype.divideContents = function(){
-    if(!this.children.length){return;}
+    if(this.children.length===0){return;}
     var that = this;
 
-    _.each(this.contents, function(unit){
-        var unitBox = unit.hitBox()
-        _.each(that.children, function(child){
-            if(child.contains(unitBox)){
-                child.contents.push(unit);
-            }
+    _.each(this.contentGroups, function(contentGroup, index){
+        _.each(contentGroup, function(unit){
+            var unitBox = unit.hitBox();
+
+            _.each(that.children, function(child){
+                if(child.contains(unitBox)){
+                    child.contentGroups[index] = child.contentGroups[index] || [];
+                    child.contentGroups[index].push(unit);
+                }
+            });
         });
     });
-    this.contents = [];
+
+    this.contentGroups = [];
 };
 
 QuadNode.prototype.contains = function(unitBox){

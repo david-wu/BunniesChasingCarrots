@@ -1,6 +1,6 @@
 var Emitter = require('../services/emitter.js');
 
-function BaseUnit(unitGroup){
+function BaseUnit(unitGroups){
     _.defaults(this, {
         pos: new Vector({coords:[0, 0]}),
         vel: new Vector({coords:[0, 0]}),
@@ -14,8 +14,7 @@ function BaseUnit(unitGroup){
         commands: [],
     });
     Emitter(this);
-    this.unitGroup = unitGroup;
-    this.unitGroup.push(this);
+    this.unitGroups = unitGroups;
     this.on('step', this.step.bind(this));
     this.on('destroy', this.destroy.bind(this));
 }

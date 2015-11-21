@@ -1,7 +1,7 @@
 var BaseUnit = require('./_baseUnit.js')
 
-function Food(unitGroup, options){
-    BaseUnit.call(this, unitGroup);
+function Food(unitGroups, options){
+    BaseUnit.call(this, arguments);
     _.extend(this, {
         maxVelocity: 2,
         type: ['food'],
@@ -11,6 +11,9 @@ function Food(unitGroup, options){
         })
     });
     _.extend(this, options)
+
+    this.unitGroup = unitGroups.foods;
+    this.unitGroup.push(this);
 
     this.on('step', this.wander.bind(this));
 }
