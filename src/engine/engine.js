@@ -3,6 +3,7 @@ var Hunter = require('../units/hunter.js');
 var Forest = require('../units/forest.js');
 var QuadNode = require('../services/quadNode.js');
 var User = require('../models/user.js');
+var Veggie = require('../units/veggie.js');
 
 function Engine(ctx, canvas){
   this.ctx = ctx;
@@ -19,7 +20,7 @@ function Engine(ctx, canvas){
   var that = this;
   this.canvas.addEventListener('click', function(event) {
     var mousePos = that.getMousePos(event);
-    new Food(that.unitGroups,{
+    new Forest(that.unitGroups,{
       pos: new Vector({coords: mousePos}),
     });
     User.resources.foods--;
@@ -41,7 +42,9 @@ Engine.prototype.createInitialUnits = function(){
     new Food(that.unitGroups);
   });
   _.times(1, function(){
-    new Hunter(that.unitGroups);
+    new Hunter(that.unitGroups,{
+      pos: new Vector({coords: [0,0]})
+    });
   })
   _.times(0, function(){
     new Forest(that.unitGroups);

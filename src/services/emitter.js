@@ -18,6 +18,7 @@ function Emitter(obj){
     return obj;
 }
 
+// if Emitters returned a promise?
 function emit(tag){
 
     // Long-hand for [].slice.call(arguments), then dropping first arg

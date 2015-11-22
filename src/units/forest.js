@@ -1,11 +1,12 @@
 var Food = require('./food.js');
-var BaseUnit = require('./_baseUnit.js')
+var BaseUnit = require('./_baseUnit.js');
+var User = require('../models/user.js');
 
 function Forest(unitGroups, options){
 
     BaseUnit.apply(this, arguments);
     _.extend(this, {
-        radius: 300,
+        radius: 100,
         color: 'green',
         opacity: 0.1,
         maxVelocity: 2,
@@ -21,8 +22,9 @@ function Forest(unitGroups, options){
 
     var that = this;
     this.on('step', function(){
-        if(that.age%3===0){
+        if(that.age%66===0){
             that.spawnFood();
+            User.resources.foods--;
         }
     });
 }

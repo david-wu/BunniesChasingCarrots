@@ -14,7 +14,7 @@ User.prototype.drawResources = function(ctx){
     ctx.globalAlpha = 1;
     ctx.fillStyle = 'blue';
     ctx.fillText('Foods:' + this.resources.foods, 10, 50);
-}
+};
 
 
 module.exports = new User();

@@ -1,6 +1,6 @@
 var BaseUnit = require('./_baseUnit.js')
 
-function Food(unitGroups, options){
+function Veggie(unitGroups, options){
     BaseUnit.call(this, arguments);
     _.extend(this, {
         maxVelocity: 2,
@@ -9,6 +9,8 @@ function Food(unitGroups, options){
             magnitude: Math.random()*300,
             radians: Math.random()*2*Math.PI,
         }),
+        color: 'orange',
+        area: 10,
     });
     _.extend(this, options)
 
@@ -18,16 +20,14 @@ function Food(unitGroups, options){
     this.on('step', this.wander.bind(this));
 }
 
-Food.prototype = Object.create(BaseUnit.prototype)
+Veggie.prototype = Object.create(BaseUnit.prototype);
 
-Food.prototype.wander = function(units){
+Veggie.prototype.wander = function(units){
+
     if(this.age % 100 === 0){
-        this.vel = new Vector({
-            degrees: Math.random()*360,
-            magnitude: this.maxVelocity,
-        });
+        this.setArea(this.area+=20);
     }
 };
 
 
-module.exports = Food;
+module.exports = Veggie;

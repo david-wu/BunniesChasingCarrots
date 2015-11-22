@@ -28,7 +28,6 @@ Vector.subtract = function(v1,v2){
 
 Vector.prototype.setMagnitude = function(mag){
     var ratio = mag/Math.hypot.apply(null, this.coords);
-    if(!ratio){debugger;return}
     return new Vector({
         coords: _.map(this.coords, function(d){return d*ratio})
     })

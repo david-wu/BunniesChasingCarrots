@@ -79,4 +79,13 @@ BaseUnit.prototype.fleeFrom = function(pos){
     this.vel = pos.subtract(this.pos).inverse().setMagnitude(this.maxVelocity);
 };
 
+// Sets radius to make area equal
+BaseUnit.prototype.setArea = function(area){
+    this.area = area;
+    this.radius = Math.pow(area/Math.PI, 0.5);
+}
+
 module.exports = BaseUnit;
+
+
+

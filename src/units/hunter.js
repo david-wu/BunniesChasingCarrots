@@ -70,7 +70,7 @@ Hunter.prototype.hunt = function(){
     if(!allFoodCandidates.length){
         this.vel = new Vector({magnitude: 0});
         this.hunting = false;
-        this.vision.radius++;
+        this.vision.radius+=5;
         return;
     }
 
@@ -78,7 +78,7 @@ Hunter.prototype.hunt = function(){
     if(unclaimedFoodCandidates.length){
         this.huntUnit(this.closestUnit(unclaimedFoodCandidates));
     }else{
-        this.vision.radius++;
+        this.vision.radius += 5;
         // this.huntUnit(this.closestUnit(allFoodCandidates));
     }
     this.sees = [];
