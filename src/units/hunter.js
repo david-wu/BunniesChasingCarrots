@@ -41,7 +41,7 @@ function Hunter(unitGroups, options){
         initialRadius: 50,
         radius: 50,
     });
-    // this.vision.draw = _.noop;
+    this.vision.draw = _.noop;
     this.vision.unitGroup = unitGroups.hunterVisions;
     this.vision.unitGroup.push(this.vision)
     this.vision.on('collision', function(unit){
@@ -77,7 +77,7 @@ Hunter.prototype.hunt = function(){
     // Stop hunting if no candidates
     this.vel.coords = [0,0];
     this.hunting = false;
-    this.vision.radius+=2;
+    this.vision.radius+=5;
     this.sees = [];
     return;
 };

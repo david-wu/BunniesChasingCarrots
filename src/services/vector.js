@@ -1,12 +1,4 @@
 function Vector(options){
-    // _.extend(this, options);
-    // _.defaults(this, {
-    //     radians: 0,
-    //     magnitude: 0,
-    // });
-
-
-
     this.magnitude = options.magnitude || 0;
     this.radians = options.radians || 0;
 

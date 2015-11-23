@@ -8,6 +8,8 @@ var Veggie = require('../units/veggie.js');
 function Engine(ctx, canvas){
   this.ctx = ctx;
   this.canvas = canvas;
+  this.canvas.width = 1500;
+  this.canvas.height = 1500;
   this.unitGroups = {
     forests: [],
     foods: [],
@@ -41,15 +43,15 @@ Engine.prototype.createInitialUnits = function(){
   _.times(0, function(){
     new Food(that.unitGroups);
   });
-  _.times(1, function(){
+  _.times(0, function(){
     new Hunter(that.unitGroups,{
       pos: new Vector({coords: [0,0]})
     });
   });
 
-  _.times(6, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:300, radians: i/6*2*Math.PI})});
-    _.times(30, function(){
+  _.times(9, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:400, radians: i/9*2*Math.PI})});
+    _.times(20, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
             magnitude: Math.random()*forest.radius,
@@ -162,7 +164,7 @@ Engine.prototype.drawAll = function(){
     }
   }
 
-  this.drawQuadNodes(this.qn, centerX, centerY);
+  // this.drawQuadNodes(this.qn, centerX, centerY);
   // this.drawQuadNodes(this.qn2, centerX+3, centerY+3);
 };
 

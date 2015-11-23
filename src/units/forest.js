@@ -20,7 +20,7 @@ function Forest(unitGroups, options){
 
     var that = this;
     this.on('step', function(){
-        if(that.age%2 === 0){
+        if(that.age%3 === 0){
             that.spawnFood();
         }
     });

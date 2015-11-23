@@ -1,7 +1,7 @@
 // Optimum depends on:
 // Area of smallest quadNode's bounds and size of units
 var maxDepth = 6;
-var maxCalculationsPerQuadNode = 200;
+var maxCalculationsPerQuadNode = 150;
 
 function QuadNode(options){
     this.tree = options.tree;
