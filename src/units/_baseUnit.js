@@ -1,6 +1,9 @@
 var Emitter = require('../services/emitter.js');
 
+var unitId = 0;
 function BaseUnit(unitGroups){
+    this.id = unitId++;
+
     _.defaults(this, {
         pos: new Vector({coords:[0, 0]}),
         vel: new Vector({coords:[0, 0]}),
@@ -15,8 +18,12 @@ function BaseUnit(unitGroups){
     });
     Emitter(this);
     this.unitGroups = unitGroups;
+
+    var that = this;
     this.on('step', this.step.bind(this));
-    this.on('destroy', this.destroy.bind(this));
+    this.on('destroy', function baseDestroy(){
+        that.destroy();
+    });
 }
 
 BaseUnit.prototype.step = function(){
@@ -45,13 +52,13 @@ BaseUnit.prototype.distanceFrom = function(unit){
     var pos1 = this.pos || this.parent.pos;
     var pos2 = unit.pos || unit.parent.pos;
     return pos1.distanceFrom(pos2);
-}
+};
 
-BaseUnit.prototype.hitBox = function(unit){
+BaseUnit.prototype.hitBox = function(){
     var pos = this.pos || this.parent.pos;
     var coords = pos.coords;
     return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
-}
+};
 
 BaseUnit.prototype.draw = function(ctx, posShift){
     var pos = this.pos || this.parent.pos;
@@ -61,7 +68,7 @@ BaseUnit.prototype.draw = function(ctx, posShift){
     ctx.beginPath();
     ctx.arc(posCoord[0]-posShift[0], posCoord[1]-posShift[1], this.radius, 0, 2 * Math.PI, false);
     ctx.fill();
-}
+};
 
 BaseUnit.prototype.reverseVel = function(pos){
     this.vel = new Vector({
@@ -83,7 +90,7 @@ BaseUnit.prototype.fleeFrom = function(pos){
 BaseUnit.prototype.setArea = function(area){
     this.area = area;
     this.radius = Math.pow(area/Math.PI, 0.5);
-}
+};
 
 module.exports = BaseUnit;
 

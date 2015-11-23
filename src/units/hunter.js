@@ -5,6 +5,7 @@ var User = require('../models/user.js');
 function Hunter(unitGroups, options){
     BaseUnit.apply(this, arguments);
     _.extend(this, {
+        radius: 10,
         color: 'red',
         radius: 3,
         drag: 0,
@@ -19,6 +20,16 @@ function Hunter(unitGroups, options){
     this.unitGroup.push(this);
 
 
+    this.on('step', this.hunt.bind(this));
+    this.on('collision', function(unit){
+        if(_.includes(unit.type, 'food')){
+            unit.emit('destroy');
+            User.resources.foods++;
+        }
+        that.vision.radius = that.vision.initialRadius;
+    });
+
+
     var that = this;
     this.sees = [];
     this.vision = new BaseUnit()
@@ -30,6 +41,7 @@ function Hunter(unitGroups, options){
         initialRadius: 50,
         radius: 50,
     });
+    // this.vision.draw = _.noop;
     this.vision.unitGroup = unitGroups.hunterVisions;
     this.vision.unitGroup.push(this.vision)
     this.vision.on('collision', function(unit){
@@ -37,16 +49,7 @@ function Hunter(unitGroups, options){
             that.sees.push(unit);
         }
     });
-
-    this.on('step', this.hunt.bind(this));
-    this.on('collision', function(unit){
-        if(_.includes(unit.type, 'food')){
-            unit.emit('destroy')
-            User.resources.foods++;
-        }
-        that.vision.radius = that.vision.initialRadius;
-    });
-
+    this.vision.step = _.noop;
 }
 
 Hunter.prototype = Object.create(BaseUnit.prototype);
@@ -61,37 +64,30 @@ Hunter.prototype.hunt = function(){
         this.hunting = false;
     }
 
-    var allFoodCandidates = _.filter(this.sees, function(unit){
-        return _.includes(unit.type, 'food');
+    var foodCandidates = _.filter(this.sees, function(unit){
+        return !unit.hunted;
     });
-    var unclaimedFoodCandidates = _.reject(allFoodCandidates, 'hunted');
 
-    // Stop hunting if no candidates
-    if(!allFoodCandidates.length){
-        this.vel = new Vector({magnitude: 0});
-        this.hunting = false;
-        this.vision.radius+=5;
+    if(foodCandidates.length){
+        this.huntUnit(this.closestUnit(foodCandidates));
+        this.sees = [];
         return;
     }
 
-    // Prefer hunting unclaimedFoodCandidates
-    if(unclaimedFoodCandidates.length){
-        this.huntUnit(this.closestUnit(unclaimedFoodCandidates));
-    }else{
-        this.vision.radius += 5;
-        // this.huntUnit(this.closestUnit(allFoodCandidates));
-    }
+    // Stop hunting if no candidates
+    this.vel.coords = [0,0];
+    this.hunting = false;
+    this.vision.radius+=2;
     this.sees = [];
+    return;
 };
 
 Hunter.prototype.wander = function(){}
 
 Hunter.prototype.huntUnit = function(unit){
-    // if(this.age%10 === 0){
-        this.hunting = unit;
-        unit.hunted = this;
-        this.goto(unit.pos);
-    // }
+    this.hunting = unit;
+    unit.hunted = this;
+    this.goto(unit.pos);
 };
 
 module.exports = Hunter;

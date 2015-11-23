@@ -16,10 +16,9 @@ function Vector(options){
 Vector.add = function(v1, v2){
     var coord1 = v1.coords;
     var coord2 = v2.coords;
-    var v =  new Vector({
+    return new Vector({
         coords: [coord1[0]+coord2[0], coord1[1]+coord2[1]]
     });
-    return v;
 };
 
 Vector.subtract = function(v1,v2){
@@ -55,13 +54,13 @@ Vector.prototype.subtract = function(v2){
 Vector.prototype.distanceFrom = function(v2){
     var v1Coord = this.coords;
     var v2Coord = v2.coords;
-
-    var coords = [];
-    for(var i = 0, length=v1Coord.length; i < length; i++){
-        coords.push(v2Coord[i]-v1Coord[i]);
+    var i, length;
+    var distance = 0;
+    for(i = 0, length = v1Coord.length; i < length; i++){
+        distance += Math.pow(v2Coord[i] - v1Coord[i], 2);
     }
-    return Math.hypot.apply(null, coords)
-}
+    return Math.pow(distance, 0.5);
+};
 
 Vector.prototype.inverse = function(){
     return new Vector({

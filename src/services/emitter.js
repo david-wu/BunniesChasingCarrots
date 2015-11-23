@@ -18,17 +18,18 @@ function Emitter(obj){
     return obj;
 }
 
-// if Emitters returned a promise?
+// if emit returned a promise? Too slow :(
 function emit(tag){
+    var i, l;
 
     // Long-hand for [].slice.call(arguments), then dropping first arg
     var args = [];
-    for(var i = 1, l = arguments.length; i < l; i++){
+    for(i = 1, l = arguments.length; i < l; i++){
         args.push(arguments[i]);
     }
 
     var tagCallbacks = this._callbacks[tag] || [];
-    for(var i = 0; i < tagCallbacks.length; i++){
+    for(i = 0, l = tagCallbacks.length; i < l; i++){
         tagCallbacks[i].apply(null, args);
     }
 }

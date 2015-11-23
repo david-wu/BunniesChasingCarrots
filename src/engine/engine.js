@@ -20,7 +20,7 @@ function Engine(ctx, canvas){
   var that = this;
   this.canvas.addEventListener('click', function(event) {
     var mousePos = that.getMousePos(event);
-    new Forest(that.unitGroups,{
+    new Food(that.unitGroups,{
       pos: new Vector({coords: mousePos}),
     });
     User.resources.foods--;
@@ -45,12 +45,10 @@ Engine.prototype.createInitialUnits = function(){
     new Hunter(that.unitGroups,{
       pos: new Vector({coords: [0,0]})
     });
-  })
-  _.times(0, function(){
-    new Forest(that.unitGroups);
   });
-  _.each(this.unitGroups.forests, function(forest){
-    _.times(40, function(){
+  _.times(1, function(){
+    var forest = new Forest(that.unitGroups);
+    _.times(50, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
             magnitude: Math.random()*300,
@@ -83,7 +81,6 @@ Engine.prototype.createQuadNode = function(flag, unitGroups){
     contentGroups: unitGroups,
     bounds: [-(this.canvas.width/2),-(this.canvas.height/2),(this.canvas.width/2),(this.canvas.height/2)],
   });
-  qn.divide();
   return qn;
 }
 
@@ -96,11 +93,6 @@ Engine.prototype.checkCollision = function(){
   this.checkCollisionForQuadNode(this.qn);
   this.checkCollisionForQuadNode(this.qn2);
 
-  // this.qn = new QuadNode({
-  //   contents: this.unitGroups,
-  //   bounds: [-(that.canvas.width/2),-(that.canvas.height/2),(that.canvas.width/2),(that.canvas.height/2)],
-  // });
-  // this.qn.divide();
 };
 
 Engine.prototype.checkCollisionForQuadNode = function(qn){
@@ -108,29 +100,23 @@ Engine.prototype.checkCollisionForQuadNode = function(qn){
 
   _.each(contentNodes, function(contentNode){
 
-    if(!contentNode.contentGroups[0] || !contentNode.contentGroups[1]){return;}
-
     var contentGroup1 = contentNode.contentGroups[0];
     var contentGroup2 = contentNode.contentGroups[1];
 
+    var i, j, iLength, jLength;
     var unit1;
     var unit2;
-    for(var i = 0; i < contentGroup1.length; i++){
-      for(var j = 0; j < contentGroup2.length; j++){
+    for(var i = 0, iLength = contentGroup1.length; i < iLength; i++){
+      for(var j = 0, jLength = contentGroup2.length; j < jLength; j++){
         unit1 = contentGroup1[i];
         unit2 = contentGroup2[j]
         if(unit1.distanceFrom(unit2) < (unit1.radius + unit2.radius)){
-          if(unit1 && unit2){
             unit1.emit('collision', unit2);
-          }
-          if(unit1 && unit2){
             unit2.emit('collision', unit1);
-          }
         }
       }
     }
   })
-
 }
 
 Engine.prototype.step = function(){
@@ -158,8 +144,9 @@ Engine.prototype.drawAll = function(){
     });
   });
 
-  User.drawResources(this.ctx);
+  // User.drawResources(this.ctx);
   // this.drawQuadNodes(this.qn, centerX, centerY);
+  // this.drawQuadNodes(this.qn2, centerX+3, centerY+3);
 };
 
 Engine.prototype.drawQuadNodes = function(qn, centerX, centerY){

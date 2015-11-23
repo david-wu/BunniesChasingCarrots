@@ -1,7 +1,11 @@
 
 
 
-function Wanderer(unit, scope){
+function WanderType(unit, scope){
+
+    return unit.on('step', function(){
+        unit.wander();
+    });
 
     unit.wander = function(){
         var stopWander = wander.apply(unit, arguments)

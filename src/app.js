@@ -1,3 +1,4 @@
+Q = require('q');
 _ = require('lodash');
 Vector = require('./services/vector.js');
 
