@@ -47,8 +47,8 @@ Engine.prototype.createInitialUnits = function(){
     });
   });
 
-  _.times(3, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:300, radians: i/3*2*Math.PI})});
+  _.times(6, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:300, radians: i/6*2*Math.PI})});
     _.times(30, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
