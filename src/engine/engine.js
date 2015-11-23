@@ -32,7 +32,7 @@ function Engine(ctx, canvas){
 
 Engine.prototype.getMousePos = function(event) {
   var rect = this.canvas.getBoundingClientRect();
-  return [event.clientX - rect.left - (this.canvas.width/2), event.clientY - rect.top- (this.canvas.height/2)];
+  return [event.clientX - rect.left - (this.canvas.width/2), event.clientY - rect.top - (this.canvas.height/2)];
 };
 
 
@@ -46,12 +46,13 @@ Engine.prototype.createInitialUnits = function(){
       pos: new Vector({coords: [0,0]})
     });
   });
-  _.times(1, function(){
-    var forest = new Forest(that.unitGroups);
-    _.times(50, function(){
+
+  _.times(3, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:300, radians: i/3*2*Math.PI})});
+    _.times(30, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
-            magnitude: Math.random()*300,
+            magnitude: Math.random()*forest.radius,
             radians: Math.random()*2*Math.PI,
         })),
       });
@@ -98,7 +99,9 @@ Engine.prototype.checkCollision = function(){
 Engine.prototype.checkCollisionForQuadNode = function(qn){
   var contentNodes = qn.allContentNodes();
 
-  _.each(contentNodes, function(contentNode){
+  var m, n, contentNode;
+  for(m=0, n=contentNodes.length; m<n; m++){
+    contentNode = contentNodes[m];
 
     var contentGroup1 = contentNode.contentGroups[0];
     var contentGroup2 = contentNode.contentGroups[1];
@@ -116,18 +119,27 @@ Engine.prototype.checkCollisionForQuadNode = function(qn){
         }
       }
     }
-  })
+  }
 }
 
 Engine.prototype.step = function(){
   var that = this;
-  _.each(this.unitGroups, function(unitGroup){
-    _.each(unitGroup, function(unit){
+
+  var unitGroupKeys = Object.keys(this.unitGroups);
+  var i,l, unitGroup;
+  var j,k, unit;
+  for(i = 0, l=unitGroupKeys.length; i<l; i++){
+    unitGroup = this.unitGroups[unitGroupKeys[i]]
+
+
+
+    for(j=0,k=unitGroup.length; j<k; j++){
+      unit=unitGroup[j];
       if(unit){
         unit.emit('step', that.unitGroups);
       }
-    });
-  });
+    }
+  }
 };
 
 Engine.prototype.drawAll = function(){
@@ -138,14 +150,19 @@ Engine.prototype.drawAll = function(){
   var centerX = that.mapCenter[0] - (that.canvas.width/2)
   var centerY = that.mapCenter[1] - (that.canvas.height/2);
 
-  _.each(this.unitGroups, function(unitGroup){
-    _.each(unitGroup, function(unit){
-      unit.draw(that.ctx, [centerX, centerY]);
-    });
-  });
 
-  // User.drawResources(this.ctx);
-  // this.drawQuadNodes(this.qn, centerX, centerY);
+  var unitGroupKeys = Object.keys(this.unitGroups);
+  var i,l, unitGroup;
+  var j,k, unit;
+  for(i = 0, l=unitGroupKeys.length; i<l; i++){
+    unitGroup = this.unitGroups[unitGroupKeys[i]]
+
+    for(j=0,k=unitGroup.length; j<k; j++){
+      unitGroup[j].draw(that.ctx, [centerX, centerY]);
+    }
+  }
+
+  this.drawQuadNodes(this.qn, centerX, centerY);
   // this.drawQuadNodes(this.qn2, centerX+3, centerY+3);
 };
 
@@ -163,6 +180,8 @@ Engine.prototype.drawQuadNodes = function(qn, centerX, centerY){
     bounds[3]-=centerY;
     that.ctx.strokeStyle = 'grey';
     that.ctx.globalAlpha = 1;
+
+    that.ctx.beginPath();
     that.ctx.rect(bounds[0], bounds[1], bounds[2]-bounds[0], bounds[3]-bounds[1]);
     that.ctx.stroke();
   });

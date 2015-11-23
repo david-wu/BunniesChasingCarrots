@@ -20,7 +20,7 @@ function WanderType(unit, scope){
 function wander(){
 
     this.vel = new Vector({
-        degrees: Math.random()*360,
+        radians: Math.PI*2*Math.random(),
         magnitude: this.maxVelocity,
     });
 };

@@ -1,6 +1,4 @@
 var BaseUnit = require('./_baseUnit.js');
-var User = require('../models/user.js');
-
 
 function Hunter(unitGroups, options){
     BaseUnit.apply(this, arguments);
@@ -24,8 +22,10 @@ function Hunter(unitGroups, options){
     this.on('collision', function(unit){
         if(_.includes(unit.type, 'food')){
             unit.emit('destroy');
-            User.resources.foods++;
         }
+        _.remove(that.sees, function(n){
+            return n===unit;
+        });
         that.vision.radius = that.vision.initialRadius;
     });
 
@@ -45,7 +45,7 @@ function Hunter(unitGroups, options){
     this.vision.unitGroup = unitGroups.hunterVisions;
     this.vision.unitGroup.push(this.vision)
     this.vision.on('collision', function(unit){
-        if(_.includes(unit.type, 'food')){
+        if(unit.type[0] === 'food'){
             that.sees.push(unit);
         }
     });

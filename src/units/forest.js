@@ -1,6 +1,5 @@
 var Food = require('./food.js');
 var BaseUnit = require('./_baseUnit.js');
-var User = require('../models/user.js');
 
 function Forest(unitGroups, options){
     BaseUnit.apply(this, arguments);
@@ -11,7 +10,7 @@ function Forest(unitGroups, options){
         maxVelocity: 2,
         type: ['forest'],
         pos: new Vector({
-            magnitude: 0,
+            magnitude: 200,
             radians: Math.random()*2*Math.PI,
         }),
     });
@@ -37,12 +36,12 @@ Forest.prototype.step = function(){
 Forest.prototype.spawnFood = function(units){
     var foodPos = this.pos.add(new Vector({
         magnitude: this.radius*Math.random(),
-        degrees: 360*Math.random(),
+        radians: Math.PI*2*Math.random(),
     }));
 
-    User.resources.foods--;
     new Food(this.unitGroups, {
-        pos: foodPos
+        pos: foodPos,
+        parent: this,
     });
 }
 

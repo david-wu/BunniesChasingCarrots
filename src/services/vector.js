@@ -1,15 +1,16 @@
 function Vector(options){
-    _.extend(this, options);
-    _.defaults(this, {
-        radians: 0,
-        magnitude: 0,
-    });
+    // _.extend(this, options);
+    // _.defaults(this, {
+    //     radians: 0,
+    //     magnitude: 0,
+    // });
 
-    if(this.degrees){
-        this.radians = this.degrees/360*2*Math.PI;
-    }
 
-    this.coords = this.coords || [Math.cos(this.radians)*this.magnitude, Math.sin(this.radians)*this.magnitude];
+
+    this.magnitude = options.magnitude || 0;
+    this.radians = options.radians || 0;
+
+    this.coords = options.coords || [Math.cos(this.radians)*this.magnitude, Math.sin(this.radians)*this.magnitude];
 }
 
 

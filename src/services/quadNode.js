@@ -1,15 +1,15 @@
 // Optimum depends on:
 // Area of smallest quadNode's bounds and size of units
 var maxDepth = 6;
-var maxCalculationsPerQuadNode = 100;
+var maxCalculationsPerQuadNode = 200;
 
 function QuadNode(options){
-    _.extend(this, options);
-    _.defaults(this, {
-        contentGroups: [],
-        children: [],
-        depth: 0,
-    });
+    this.tree = options.tree;
+    this.bounds = options.bounds;
+
+    this.contentGroups = options.contentGroups || [];
+    this.children = options.children || [];
+    this.depth = options.depth || 0;
 }
 
 // Used for quadTree demo
@@ -45,17 +45,22 @@ QuadNode.prototype.allContentNodes = function(){
 
 // Divides content into 4 nodes
 QuadNode.prototype.divide = function(){
+    if(this.depth > maxDepth){return;}
 
     this.children = this.createChildren();
     this.divideContents();
 
-    _.each(this.children, function(child){
-        if(child.contentGroups[0] && child.contentGroups[1]){
-            if(child.contentGroups[0].length * child.contentGroups[1].length > maxCalculationsPerQuadNode && child.depth < maxDepth){
+    // Recursively divides each child while they have too much content
+    var i, l, child, childContentGroup;
+    for(i=0, l=4; i<l; i++){
+        child = this.children[i]
+        childContentGroup = child.contentGroups;
+        if(childContentGroup[0] && childContentGroup[1]){
+            if(childContentGroup[0].length * childContentGroup[1].length > maxCalculationsPerQuadNode){
                 child.divide();
             }
         }
-    });
+    };
 };
 
 QuadNode.prototype.createChildren = function(){
@@ -96,18 +101,25 @@ QuadNode.prototype.divideContents = function(){
 
     if(this.children.length === 0){return;}
 
-    _.each(this.contentGroups, function(contentGroup, index){
-        _.each(contentGroup, function(unit){
+    var i, l, contentGroup;
+    var j, k, unit;
+    var m, n, child;
+    for(i=0,l=2; i<l; i++){
+        contentGroup = this.contentGroups[i];
+
+        for(j=0,k=contentGroup.length; j < k; j++){
+            unit = contentGroup[j];
             hitCache[unit.id] = hitCache[unit.id] || unit.hitBox();
 
-            _.each(that.children, function(child){
+            for(m=0,n=4; m < n; m++){
+                child = this.children[m];
                 if(child.contains(hitCache[unit.id])){
-                    child.contentGroups[index] = child.contentGroups[index] || [];
-                    child.contentGroups[index].push(unit);
+                    child.contentGroups[i] = child.contentGroups[i] || [];
+                    child.contentGroups[i].push(unit);
                 }
-            });
-        });
-    });
+            }
+        }
+    }
 
     this.contentGroups = [];
 };
