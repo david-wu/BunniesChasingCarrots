@@ -164,7 +164,7 @@ Engine.prototype.drawAll = function(){
     }
   }
 
-  // this.drawQuadNodes(this.qn, centerX, centerY);
+  this.drawQuadNodes(this.qn, centerX, centerY);
   // this.drawQuadNodes(this.qn2, centerX+3, centerY+3);
 };
 
