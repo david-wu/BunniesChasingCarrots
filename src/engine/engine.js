@@ -8,8 +8,8 @@ var Veggie = require('../units/veggie.js');
 function Engine(ctx, canvas){
   this.ctx = ctx;
   this.canvas = canvas;
-  this.canvas.width = 1500;
-  this.canvas.height = 1500;
+  this.canvas.width = 3000;
+  this.canvas.height = 3000;
   this.unitGroups = {
     forests: [],
     foods: [],
@@ -49,8 +49,20 @@ Engine.prototype.createInitialUnits = function(){
     });
   });
 
+  // _.times(3, function(i){
+  //   var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:200, radians: i/3*2*Math.PI})});
+  //   _.times(20, function(){
+  //     new Hunter(that.unitGroups, {
+  //       pos: forest.pos.add(new Vector({
+  //           magnitude: Math.random()*forest.radius,
+  //           radians: Math.random()*2*Math.PI,
+  //       })),
+  //     });
+  //   });
+  // });
+
   _.times(9, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:400, radians: i/9*2*Math.PI})});
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:600, radians: i/9*2*Math.PI})});
     _.times(20, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
@@ -60,24 +72,42 @@ Engine.prototype.createInitialUnits = function(){
       });
     });
   });
+
+
+  _.times(9, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:1000, radians: i/9*2*Math.PI})});
+    _.times(20, function(){
+      new Hunter(that.unitGroups, {
+        pos: forest.pos.add(new Vector({
+            magnitude: Math.random()*forest.radius,
+            radians: Math.random()*2*Math.PI,
+        })),
+      });
+    });
+  });
+
+
 };
 
 Engine.prototype.start = function(){
-  var that = this;
-  this.tickInterval = setInterval(function(){
-    that.tick();
-  }, 16);
+  this.tick();
 };
 
-Engine.prototype.stop = function(){
-  clearInterval(this.tickInterval);
-};
-
+var tickCount = 0;
 Engine.prototype.tick = function(){
-  this.checkCollision();
-  this.step();
-  this.drawAll();
-};
+  var that = this;
+
+    if(tickCount++ % 6===0){
+      that.checkCollision();
+    }
+
+    that.step();
+    that.drawAll();
+
+  requestAnimationFrame(function(){
+    that.tick();
+  })
+}
 
 Engine.prototype.createQuadNode = function(flag, unitGroups){
   var qn = new QuadNode({
@@ -90,8 +120,8 @@ Engine.prototype.createQuadNode = function(flag, unitGroups){
 Engine.prototype.checkCollision = function(){
   var that = this;
 
-  this.qn = this.createQuadNode('first', [this.unitGroups.foods, this.unitGroups.hunterVisions]);
-  this.qn2 = this.createQuadNode('', [this.unitGroups.foods, this.unitGroups.hunters]);
+  this.qn = this.createQuadNode('first', [this.unitGroups.hunterVisions, this.unitGroups.foods]);
+  this.qn2 = this.createQuadNode('', [this.unitGroups.hunters, this.unitGroups.foods]);
 
   this.checkCollisionForQuadNode(this.qn);
   this.checkCollisionForQuadNode(this.qn2);
@@ -117,7 +147,7 @@ Engine.prototype.checkCollisionForQuadNode = function(qn){
         unit2 = contentGroup2[j]
         if(unit1.distanceFrom(unit2) < (unit1.radius + unit2.radius)){
             unit1.emit('collision', unit2);
-            unit2.emit('collision', unit1);
+            // unit2.emit('collision', unit1);
         }
       }
     }
@@ -164,7 +194,7 @@ Engine.prototype.drawAll = function(){
     }
   }
 
-  this.drawQuadNodes(this.qn, centerX, centerY);
+  // this.drawQuadNodes(this.qn, centerX, centerY);
   // this.drawQuadNodes(this.qn2, centerX+3, centerY+3);
 };
 
@@ -174,19 +204,20 @@ Engine.prototype.drawQuadNodes = function(qn, centerX, centerY){
   centerY = centerY || that.mapCenter[1] - (that.canvas.height/2);
 
   var allQuadNodes = qn.allChildren();
-  _.each(allQuadNodes, function(quadNode){
-    var bounds = quadNode.bounds.slice();
+
+  for(var i=0,l=allQuadNodes.length; i<l; i++){
+    var bounds = allQuadNodes[i].bounds.slice()
     bounds[0]-=centerX;
     bounds[1]-=centerY;
     bounds[2]-=centerX;
     bounds[3]-=centerY;
-    that.ctx.strokeStyle = 'grey';
-    that.ctx.globalAlpha = 1;
+    this.ctx.strokeStyle = 'grey';
+    this.ctx.globalAlpha = 1;
 
-    that.ctx.beginPath();
-    that.ctx.rect(bounds[0], bounds[1], bounds[2]-bounds[0], bounds[3]-bounds[1]);
-    that.ctx.stroke();
-  });
+    this.ctx.beginPath();
+    this.ctx.rect(bounds[0], bounds[1], bounds[2]-bounds[0], bounds[3]-bounds[1]);
+    this.ctx.stroke();
+  }
 };
 
 module.exports = Engine;
