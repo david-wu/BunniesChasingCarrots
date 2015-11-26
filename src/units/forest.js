@@ -18,15 +18,21 @@ function Forest(unitGroups, options){
     this.unitGroup = this.unitGroups.forests;
     this.unitGroup.push(this);
 
-    var that = this;
-    this.on('step', function(){
-        if(that.age%3 === 0){
-            that.spawnFood();
-        }
-    });
+    // var that = this;
+    // this.on('step', function(){
+    //     if(that.age%3 === 0){
+    //         that.spawnFood();
+    //     }
+    // });
 }
 
 Forest.prototype = Object.create(BaseUnit.prototype)
+
+Forest.prototype.act = function(){
+    if(this.age%3 === 0){
+        this.spawnFood();
+    }
+}
 
 Forest.prototype.step = function(){
     this.age++;

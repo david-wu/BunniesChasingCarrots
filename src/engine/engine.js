@@ -8,8 +8,8 @@ var Veggie = require('../units/veggie.js');
 function Engine(ctx, canvas){
   this.ctx = ctx;
   this.canvas = canvas;
-  this.canvas.width = 3000;
-  this.canvas.height = 3000;
+  this.canvas.width = 2500;
+  this.canvas.height = 2500;
   this.unitGroups = {
     forests: [],
     foods: [],
@@ -61,8 +61,8 @@ Engine.prototype.createInitialUnits = function(){
   //   });
   // });
 
-  _.times(9, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:600, radians: i/9*2*Math.PI})});
+  _.times(6, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:400, radians: i/6*2*Math.PI})});
     _.times(20, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
@@ -74,8 +74,8 @@ Engine.prototype.createInitialUnits = function(){
   });
 
 
-  _.times(9, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:1000, radians: i/9*2*Math.PI})});
+  _.times(12, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:800, radians: i/12*2*Math.PI})});
     _.times(20, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
@@ -168,7 +168,9 @@ Engine.prototype.step = function(){
     for(j=0,k=unitGroup.length; j<k; j++){
       unit=unitGroup[j];
       if(unit){
-        unit.emit('step', that.unitGroups);
+        unit.step();
+        unit.act();
+        // unit.emit('step', that.unitGroups);
       }
     }
   }

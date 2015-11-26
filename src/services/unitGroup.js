@@ -14,11 +14,11 @@ function UnitGroup(options){
     this.collisionLatency = options.collisionLatency || 3;
 }
 
-// Move triggers physical laws like updating vel, pos, drag
-UnitGroup.prototype.move = function(){
+// Step triggers physical laws like updating vel, pos, drag
+UnitGroup.prototype.step = function(){
     var i,l;
     for(i=0,l=this.units.length; i++){
-        this.units[i].emit('step');
+        this.units[i].step();
     }
 }
 
@@ -26,18 +26,10 @@ UnitGroup.prototype.move = function(){
 // Update frequency can be proportional to vel
 UnitGroup.prototype.draw = function(){
     this.drawPrep();
+    for(i=0,l=this.units.length; i++){
+        this.units[i].draw();
+    }
     this.drawFinish();
-    for(i=0,l=this.units.length; i++){
-        this.units[i].emit('draw');
-    }
-}
-
-// Think triggers the unit's logic, like if it will hunt/wander
-UnitGroup.prototype.think = function(){
-    var i,l;
-    for(i=0,l=this.units.length; i++){
-        this.units[i].emit('think');
-    }
 }
 
 // Emits collisions, vision doesn't need to checkCollisions as often

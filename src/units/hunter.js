@@ -18,7 +18,6 @@ function Hunter(unitGroups, options){
     this.unitGroup.push(this);
 
 
-    this.on('step', this.hunt.bind(this));
     this.on('collision', function(unit){
         if(_.includes(unit.type, 'food')){
             unit.emit('destroy');
@@ -54,8 +53,14 @@ function Hunter(unitGroups, options){
 
 Hunter.prototype = Object.create(BaseUnit.prototype);
 
+Hunter.prototype.act = function(){
+    if(this.age%10 === 0){
+        this.hunt();
+    }
+}
+
 Hunter.prototype.hunt = function(){
-    if(this.age%10!==0){return;}
+    // if(this.age%10!==0){return;}
     var that = this;
 
     // stops hunting previous target

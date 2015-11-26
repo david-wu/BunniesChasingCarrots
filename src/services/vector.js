@@ -31,7 +31,7 @@ Vector.prototype.magnitude = function(){
 }
 
 Vector.prototype.applyLinearDrag = function(k){
-    for(var i = 0; i < this.coords.length; i++){
+    for(var i = 0; i < 2; i++){
         this.coords[i] *= (1-k);
     }
 }

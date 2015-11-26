@@ -33,6 +33,10 @@ BaseUnit.prototype.step = function(){
     this.age++;
 };
 
+BaseUnit.prototype.act = function(){
+
+}
+
 BaseUnit.prototype.destroy = function(){
     var index = this.unitGroup.indexOf(this);
     if(index !== -1){
@@ -66,7 +70,7 @@ BaseUnit.prototype.draw = function(ctx, posShift){
     ctx.fillStyle = this.color;
     ctx.globalAlpha = this.opacity;
     ctx.beginPath();
-    ctx.arc(posCoord[0]-posShift[0], posCoord[1]-posShift[1], this.radius, 0, 2 * Math.PI, false);
+    ctx.arc(posCoord[0]-posShift[0], posCoord[1]-posShift[1], this.radius, 0, Math.PI*2, false);
     ctx.fill();
 };
 
