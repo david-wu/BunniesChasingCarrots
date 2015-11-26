@@ -5,11 +5,21 @@ var QuadNode = require('../services/quadNode.js');
 var User = require('../models/user.js');
 var Veggie = require('../units/veggie.js');
 
-function Engine(ctx, canvas){
-  this.ctx = ctx;
-  this.canvas = canvas;
-  this.canvas.width = 2500;
-  this.canvas.height = 2500;
+function Engine(renderer){
+  // this.ctx = ctx;
+  // this.canvas = canvas;
+
+  this.renderer = renderer;
+
+  // create the root of the scene graph
+  this.mainStage = new PIXI.ParticleContainer();
+  this.mainStage.interactive = true;
+
+  // this.mainGraphics = new PIXI.Graphics();
+  // this.mainStage.addChild(this.mainGraphics);
+
+  // this.canvas.view.width = 2500;
+  // this.canvas.view.height = 2500;
   this.unitGroups = {
     forests: [],
     foods: [],
@@ -19,23 +29,23 @@ function Engine(ctx, canvas){
   this.mapCenter = [0, 0];
 
 
-  var that = this;
-  this.canvas.addEventListener('click', function(event) {
-    var mousePos = that.getMousePos(event);
-    new Food(that.unitGroups,{
-      pos: new Vector({coords: mousePos}),
-    });
-    User.resources.foods--;
-  }, false);
+  // var that = this;
+  // this.canvas.addEventListener('click', function(event) {
+  //   var mousePos = that.getMousePos(event);
+  //   new Food(that.unitGroups,{
+  //     pos: new Vector({coords: mousePos}),
+  //   });
+  //   User.resources.foods--;
+  // }, false);
 
   this.createInitialUnits();
 }
 
 
-Engine.prototype.getMousePos = function(event) {
-  var rect = this.canvas.getBoundingClientRect();
-  return [event.clientX - rect.left - (this.canvas.width/2), event.clientY - rect.top - (this.canvas.height/2)];
-};
+// Engine.prototype.getMousePos = function(event) {
+//   var rect = this.canvas.getBoundingClientRect();
+//   return [event.clientX - rect.left - (this.canvas.width/2), event.clientY - rect.top - (this.canvas.height/2)];
+// };
 
 
 Engine.prototype.createInitialUnits = function(){
@@ -49,20 +59,20 @@ Engine.prototype.createInitialUnits = function(){
     });
   });
 
-  // _.times(3, function(i){
-  //   var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:200, radians: i/3*2*Math.PI})});
-  //   _.times(20, function(){
-  //     new Hunter(that.unitGroups, {
-  //       pos: forest.pos.add(new Vector({
-  //           magnitude: Math.random()*forest.radius,
-  //           radians: Math.random()*2*Math.PI,
-  //       })),
-  //     });
-  //   });
-  // });
+  _.times(3, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:200, radians: i/3*2*Math.PI})});
+    _.times(20, function(){
+      new Hunter(that.unitGroups, {
+        pos: forest.pos.add(new Vector({
+            magnitude: Math.random()*forest.radius,
+            radians: Math.random()*2*Math.PI,
+        })),
+      });
+    });
+  });
 
-  _.times(6, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:400, radians: i/6*2*Math.PI})});
+  _.times(9, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:400, radians: i/9*2*Math.PI})});
     _.times(20, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
@@ -74,8 +84,8 @@ Engine.prototype.createInitialUnits = function(){
   });
 
 
-  _.times(12, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:800, radians: i/12*2*Math.PI})});
+  _.times(27, function(i){
+    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:800, radians: i/27*2*Math.PI})});
     _.times(20, function(){
       new Hunter(that.unitGroups, {
         pos: forest.pos.add(new Vector({
@@ -112,7 +122,7 @@ Engine.prototype.tick = function(){
 Engine.prototype.createQuadNode = function(flag, unitGroups){
   var qn = new QuadNode({
     contentGroups: unitGroups,
-    bounds: [-(this.canvas.width/2),-(this.canvas.height/2),(this.canvas.width/2),(this.canvas.height/2)],
+    bounds: [-(this.renderer.width/2),-(this.renderer.height/2),(this.renderer.width/2),(this.renderer.height/2)],
   });
   return qn;
 }
@@ -179,11 +189,12 @@ Engine.prototype.step = function(){
 Engine.prototype.drawAll = function(){
   var that = this;
 
-  this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-  var centerX = that.mapCenter[0] - (that.canvas.width/2)
-  var centerY = that.mapCenter[1] - (that.canvas.height/2);
+  var centerX = that.mapCenter[0] - (this.renderer.width/2)
+  var centerY = that.mapCenter[1] - (this.renderer.height/2);
 
+  // this.mainGraphics.clear();
 
   var unitGroupKeys = Object.keys(this.unitGroups);
   var i,l, unitGroup;
@@ -192,35 +203,37 @@ Engine.prototype.drawAll = function(){
     unitGroup = this.unitGroups[unitGroupKeys[i]]
 
     for(j=0,k=unitGroup.length; j<k; j++){
-      unitGroup[j].draw(that.ctx, [centerX, centerY]);
+      unitGroup[j].draw(this.mainStage, [centerX, centerY]);
     }
   }
 
   // this.drawQuadNodes(this.qn, centerX, centerY);
   // this.drawQuadNodes(this.qn2, centerX+3, centerY+3);
+  this.renderer.render(this.mainStage)
+
 };
 
-Engine.prototype.drawQuadNodes = function(qn, centerX, centerY){
-  var that = this;
-  centerX = centerX || that.mapCenter[0] - (that.canvas.width/2);
-  centerY = centerY || that.mapCenter[1] - (that.canvas.height/2);
+// Engine.prototype.drawQuadNodes = function(qn, centerX, centerY){
+//   var that = this;
+//   centerX = centerX || that.mapCenter[0] - (that.canvas.width/2);
+//   centerY = centerY || that.mapCenter[1] - (that.canvas.height/2);
 
-  var allQuadNodes = qn.allChildren();
+//   var allQuadNodes = qn.allChildren();
 
-  for(var i=0,l=allQuadNodes.length; i<l; i++){
-    var bounds = allQuadNodes[i].bounds.slice()
-    bounds[0]-=centerX;
-    bounds[1]-=centerY;
-    bounds[2]-=centerX;
-    bounds[3]-=centerY;
-    this.ctx.strokeStyle = 'grey';
-    this.ctx.globalAlpha = 1;
+//   for(var i=0,l=allQuadNodes.length; i<l; i++){
+//     var bounds = allQuadNodes[i].bounds.slice()
+//     bounds[0]-=centerX;
+//     bounds[1]-=centerY;
+//     bounds[2]-=centerX;
+//     bounds[3]-=centerY;
+//     this.ctx.strokeStyle = 'grey';
+//     this.ctx.globalAlpha = 1;
 
-    this.ctx.beginPath();
-    this.ctx.rect(bounds[0], bounds[1], bounds[2]-bounds[0], bounds[3]-bounds[1]);
-    this.ctx.stroke();
-  }
-};
+//     this.ctx.beginPath();
+//     this.ctx.rect(bounds[0], bounds[1], bounds[2]-bounds[0], bounds[3]-bounds[1]);
+//     this.ctx.stroke();
+//   }
+// };
 
 module.exports = Engine;
 

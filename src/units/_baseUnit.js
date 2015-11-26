@@ -17,6 +17,8 @@ function BaseUnit(unitGroups){
         commands: [],
     });
     Emitter(this);
+
+    this.graphics = new PIXI.Graphics();
     this.unitGroups = unitGroups;
 
     var that = this;
@@ -64,14 +66,57 @@ BaseUnit.prototype.hitBox = function(){
     return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
 };
 
-BaseUnit.prototype.draw = function(ctx, posShift){
+// var graphics = new PIXI.Graphics();
+// var texture = PIXI.Texture.fromImage('./silver_coin.png');
+
+// var circle = new PIXI.Graphics();
+// circle.beginFill(0x9966FF);
+// circle.drawCircle(0, 0, 32);
+// circle.endFill();
+BaseUnit.prototype.draw = function(stage, posShift){
+    var that = this;
     var pos = this.pos || this.parent.pos;
     var posCoord = pos.coords;
-    ctx.fillStyle = this.color;
-    ctx.globalAlpha = this.opacity;
-    ctx.beginPath();
-    ctx.arc(posCoord[0]-posShift[0], posCoord[1]-posShift[1], this.radius, 0, Math.PI*2, false);
-    ctx.fill();
+
+    if(!this.sprite){
+        this.sprite = new PIXI.Sprite.fromImage('./silver_coin.png');
+        this.on('destroy', function(){
+            var index = stage.children.indexOf(that.sprite)
+            if(index !== -1){
+                stage.children.splice(index,1)
+            }
+        });
+        this.sprite.cacheAsBitmapboolean = true;
+        this.sprite.width = this.radius*2;
+        this.sprite.height = this.radius*2;
+        this.sprite.anchor.x = 0.5;
+        this.sprite.anchor.y = 0.5;
+
+// this.sprite = new PIXI.Graphics();
+// this.sprite.beginFill(0xFF0000);
+// this.sprite.drawCircle(30, 30, 32);
+// this.sprite.endFill();
+
+
+stage.addChild(this.sprite);
+    }
+
+
+    this.sprite.position.x = posCoord[0]-posShift[0];
+    this.sprite.position.y = posCoord[1]-posShift[1];
+
+
+    // draw a circle
+//     this.graphics.lineStyle(0);
+//     this.graphics.beginFill(0xFFFF0B, 0.5);
+//     this.graphics.drawCircle(posCoord[0]-posShift[0], posCoord[1]-posShift[1], this.radius);
+//     this.graphics.endFill();
+// return this.graphics
+    // ctx.fillStyle = this.color;
+    // ctx.globalAlpha = this.opacity;
+    // ctx.beginPath();
+    // ctx.arc(posCoord[0]-posShift[0], posCoord[1]-posShift[1], this.radius, 0, Math.PI*2, false);
+    // ctx.fill();
 };
 
 BaseUnit.prototype.reverseVel = function(pos){
