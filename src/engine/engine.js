@@ -10,38 +10,28 @@ var Veggie = require('../units/veggie.js');
 function Engine(renderer){
   this.renderer = renderer;
 
-  this.absoluteBounds = [-(this.renderer.width/2),-(this.renderer.height/2),(this.renderer.width/2),(this.renderer.height/2)];
   UnitGroups.setAbsoluteBounds([-(this.renderer.width/2),-(this.renderer.height/2),(this.renderer.width/2),(this.renderer.height/2)]);
+
   this.mapCenter = [0, 0];
-
-  this.unitGroups = {
-    forests: [],
-    foods: [],
-    hunters: [],
-    hunterVisions: new UnitGroup({
-      name: 'hVisions',
-      collisionBounds: this.absoluteBounds,
-    }),
-  };
-
-  // this.unitGroups.hunterVisions.addCanCollideWith({units: this.unitGroups.foods})
 
   this.createInitialUnits();
 
   // create the root of the scene graph
   this.mainStage = new PIXI.ParticleContainer();
   this.mainStage.interactive = true;
-
 }
 
-
 Engine.prototype.createInitialUnits = function(){
-  var that = this;
+  this.createEcosystem(3, 200);
+  this.createEcosystem(6, 400);
+};
 
-  _.times(3, function(i){
-    var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:200, radians: i/3*2*Math.PI})});
+Engine.prototype.createEcosystem = function(count, radius){
+  var that = this;
+  _.times(count, function(i){
+    var forest = new Forest({pos: new Vector({magnitude:radius, radians: i/count*2*Math.PI})});
     _.times(20, function(){
-      new Hunter(that.unitGroups, {
+      new Hunter({
         pos: forest.pos.add(new Vector({
             magnitude: Math.random()*forest.radius,
             radians: Math.random()*2*Math.PI,
@@ -49,34 +39,7 @@ Engine.prototype.createInitialUnits = function(){
       });
     });
   });
-
-  // _.times(9, function(i){
-  //   var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:400, radians: i/9*2*Math.PI})});
-  //   _.times(20, function(){
-  //     new Hunter(that.unitGroups, {
-  //       pos: forest.pos.add(new Vector({
-  //           magnitude: Math.random()*forest.radius,
-  //           radians: Math.random()*2*Math.PI,
-  //       })),
-  //     });
-  //   });
-  // });
-
-
-  // _.times(27, function(i){
-  //   var forest = new Forest(that.unitGroups, {pos: new Vector({magnitude:800, radians: i/27*2*Math.PI})});
-  //   _.times(20, function(){
-  //     new Hunter(that.unitGroups, {
-  //       pos: forest.pos.add(new Vector({
-  //           magnitude: Math.random()*forest.radius,
-  //           radians: Math.random()*2*Math.PI,
-  //       })),
-  //     });
-  //   });
-  // });
-
-
-};
+}
 
 Engine.prototype.start = function(){
   this.tick();
@@ -98,39 +61,12 @@ Engine.prototype.tick = function(){
   })
 }
 
-Engine.prototype.createQuadNode = function(flag, unitGroups){
-  var qn = new QuadNode({
-    contentGroups: unitGroups,
-    bounds: this.absoluteBounds,
-  });
-  return qn;
-}
-
 Engine.prototype.checkCollision = function(){
-  var that = this;
   UnitGroups.checkCollisions();
 };
 
 Engine.prototype.step = function(){
-  var that = this;
-
-  var unitGroupKeys = Object.keys(this.unitGroups);
-  var i,l, unitGroup;
-  var j,k, unit;
-  for(i = 0, l=unitGroupKeys.length; i<l; i++){
-    unitGroup = this.unitGroups[unitGroupKeys[i]]
-
-
-
-    for(j=0,k=unitGroup.length; j<k; j++){
-      unit=unitGroup[j];
-      if(unit){
-        unit.step();
-        unit.act();
-        // unit.emit('step', that.unitGroups);
-      }
-    }
-  }
+  UnitGroups.step();
 };
 
 Engine.prototype.drawAll = function(){
@@ -142,22 +78,7 @@ Engine.prototype.drawAll = function(){
   var centerY = this.mapCenter[1] - (this.renderer.height/2);
 
 
-  UnitGroups.drawAll(this.mainStage, [centerX, centerY])
-
-
-  // this.mainGraphics.clear();
-
-  // var unitGroupKeys = Object.keys(this.unitGroups);
-  // var i,l, unitGroup;
-  // var j,k, unit;
-  // for(i = 0, l=unitGroupKeys.length; i<l; i++){
-  //   unitGroup = this.unitGroups[unitGroupKeys[i]]
-
-  //   for(j=0,k=unitGroup.length; j<k; j++){
-  //     unitGroup[j].draw(this.mainStage, [centerX, centerY]);
-  //   }
-  // }
-
+  UnitGroups.draw(this.mainStage, [centerX, centerY])
   this.renderer.render(this.mainStage)
 
 };

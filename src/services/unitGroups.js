@@ -40,18 +40,27 @@ UnitGroups.prototype.addUnitGroup = function(unitGroup){
 }
 
 UnitGroups.prototype.checkCollisions= function(){
-    // console.log(this.groups)
     _.each(this.groups, function(group){
         group.checkCollisions();
     })
 }
 
-UnitGroups.prototype.drawAll = function(stage, offSet){
-    var count = 0
+UnitGroups.prototype.draw = function(stage, offSet){
     _.each(this.groups, function(group,key){
         if(key === 'forest'){return}
         _.each(group.units, function(unit){
             unit.draw(stage, offSet);
+        })
+    })
+}
+
+UnitGroups.prototype.step = function(){
+    _.each(this.groups, function(group,key){
+        _.each(group.units, function(unit){
+            if(unit){
+                unit.step();
+                unit.act();
+            }
         })
     })
 }

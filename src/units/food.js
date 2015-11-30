@@ -1,7 +1,7 @@
 var UnitGroups = require('../services/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js')
 
-function Food(unitGroups, options){
+function Food(options){
     BaseUnit.call(this, arguments);
     _.extend(this, {
         maxVelocity: 2,
@@ -9,8 +9,6 @@ function Food(unitGroups, options){
     });
     _.extend(this, options)
 
-    this.unitGroup = unitGroups.foods;
-    this.unitGroup.push(this);
     UnitGroups.addUnit('food', this)
 
 }

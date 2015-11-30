@@ -1,7 +1,7 @@
 var UnitGroups = require('../services/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js');
 
-function Vision(unitGroups, options){
+function Vision(options){
     BaseUnit.apply(this, arguments);
     var that = this;
     _.extend(this, {
@@ -14,15 +14,11 @@ function Vision(unitGroups, options){
     });
     _.extend(this, options);
 
-    this.unitGroup = this.unitGroups.hunterVisions;
-    this.unitGroup.add(this);
-
     this.on('collision', function(unit){
         that.sees.push(unit);
     });
 
     UnitGroups.addUnit('hunterVision', this)
-
 }
 
 

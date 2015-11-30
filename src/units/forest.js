@@ -3,7 +3,7 @@ var BaseUnit = require('./_baseUnit.js');
 var UnitGroups = require('../services/unitGroups.js');
 
 
-function Forest(unitGroups, options){
+function Forest(options){
     BaseUnit.apply(this, arguments);
     _.extend(this, {
         radius: 300,
@@ -17,17 +17,8 @@ function Forest(unitGroups, options){
         }),
     });
     _.extend(this, options)
-    this.unitGroup = this.unitGroups.forests;
-    this.unitGroup.push(this);
 
     UnitGroups.addUnit('forest', this)
-
-    // var that = this;
-    // this.on('step', function(){
-    //     if(that.age%3 === 0){
-    //         that.spawnFood();
-    //     }
-    // });
 }
 
 Forest.prototype = Object.create(BaseUnit.prototype)
@@ -49,7 +40,7 @@ Forest.prototype.spawnFood = function(units){
         radians: Math.PI*2*Math.random(),
     }));
 
-    new Food(this.unitGroups, {
+    new Food({
         pos: foodPos,
         parent: this,
     });
