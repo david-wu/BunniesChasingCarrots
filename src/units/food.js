@@ -1,3 +1,4 @@
+var UnitGroups = require('../services/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js')
 
 function Food(unitGroups, options){
@@ -10,11 +11,8 @@ function Food(unitGroups, options){
 
     this.unitGroup = unitGroups.foods;
     this.unitGroup.push(this);
+    UnitGroups.addUnit('food', this)
 
-    // var that = this;
-    // this.on('step', function(){
-    //     that.wander(that.parent && that.parent.pos, 0.5)
-    // });
 }
 
 Food.prototype = Object.create(BaseUnit.prototype)

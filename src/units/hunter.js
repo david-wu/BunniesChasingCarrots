@@ -1,4 +1,6 @@
+var UnitGroups = require('../services/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js');
+var Vision = require('./vision.js');
 
 function Hunter(unitGroups, options){
     BaseUnit.apply(this, arguments);
@@ -17,38 +19,48 @@ function Hunter(unitGroups, options){
     this.unitGroup = this.unitGroups.hunters;
     this.unitGroup.push(this);
 
-
+    var that = this;
     this.on('collision', function(unit){
         if(_.includes(unit.type, 'food')){
             unit.emit('destroy');
         }
-        _.remove(that.sees, function(n){
+        _.remove(that.vision.sees, function(n){
             return n===unit;
         });
         that.vision.radius = that.vision.initialRadius;
+        //     debugger;
+        //     that
+        // console.log(tha)
     });
 
+    UnitGroups.addUnit('hunter', this)
 
-    var that = this;
-    this.sees = [];
-    this.vision = new BaseUnit()
-    _.extend(this.vision, {
-        pos: undefined,
+    this.vision = new Vision(unitGroups, {
         parent: this,
-        color: 'blue',
-        opacity: 0.05,
-        initialRadius: 50,
-        radius: 50,
     });
-    this.vision.draw = _.noop;
-    this.vision.unitGroup = unitGroups.hunterVisions;
-    this.vision.unitGroup.push(this.vision)
-    this.vision.on('collision', function(unit){
-        if(unit.type[0] === 'food'){
-            that.sees.push(unit);
-        }
-    });
-    this.vision.step = _.noop;
+
+    // var that = this;
+    // this.sees = [];
+    // this.vision = new BaseUnit()
+    // _.extend(this.vision, {
+    //     pos: undefined,
+    //     parent: this,
+    //     color: 'blue',
+    //     opacity: 0.05,
+    //     initialRadius: 50,
+    //     radius: 50,
+    // });
+    // this.vision.draw = _.noop;
+    // this.vision.unitGroup = unitGroups.hunterVisions;
+    // this.vision.unitGroup.add(this.vision);
+    // this.vision.on('collision', function(unit){
+    //     if(unit.type[0] === 'food'){
+    //         that.sees.push(unit);
+    //     }
+    // });
+    // this.vision.step = _.noop;
+    // UnitGroups.addUnit('hunterVision', this.vision)
+
 }
 
 Hunter.prototype = Object.create(BaseUnit.prototype);
@@ -69,13 +81,13 @@ Hunter.prototype.hunt = function(){
         this.hunting = false;
     }
 
-    var foodCandidates = _.filter(this.sees, function(unit){
+    var foodCandidates = _.filter(this.vision.sees, function(unit){
         return !unit.hunted;
     });
 
     if(foodCandidates.length){
         this.huntUnit(this.closestUnit(foodCandidates));
-        this.sees = [];
+        this.vision.sees = [];
         return;
     }
 
@@ -83,7 +95,7 @@ Hunter.prototype.hunt = function(){
     this.vel.coords = [0,0];
     this.hunting = false;
     this.vision.radius+=5;
-    this.sees = [];
+    this.vision.sees = [];
     return;
 };
 

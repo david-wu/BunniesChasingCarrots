@@ -1,5 +1,7 @@
 var Food = require('./food.js');
 var BaseUnit = require('./_baseUnit.js');
+var UnitGroups = require('../services/unitGroups.js');
+
 
 function Forest(unitGroups, options){
     BaseUnit.apply(this, arguments);
@@ -17,6 +19,8 @@ function Forest(unitGroups, options){
     _.extend(this, options)
     this.unitGroup = this.unitGroups.forests;
     this.unitGroup.push(this);
+
+    UnitGroups.addUnit('forest', this)
 
     // var that = this;
     // this.on('step', function(){

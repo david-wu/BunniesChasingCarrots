@@ -1,23 +1,28 @@
 
-
-var quadTree = require('./quadNode.js')
-
+var QuadNode = require('./quadNode.js');
 
 function UnitGroup(options){
+    _.extend(this, options);
+    _.defaults(this, {
+        units: [],
+        canCollideWith: [],
+        collisionBounds: [],
+        collisionLatency: 3,
+    });
+}
 
-    // list of units (and other unitgroups!?  Get a tree going)
-    this.units = options.units || [];
-
-    // list of other unitGroups
-    this.canCollideWith = options.canCollideWith || [];
-    this.collisionBounds = options.collisionBounds || [];
-    this.collisionLatency = options.collisionLatency || 3;
+UnitGroup.prototype.addCanCollideWith = function(unitGroups){
+    if(unitGroups instanceof Array){
+        this.canCollideWith.push.apply(this.canCollideWith, unitGroups)
+    }else{
+        this.canCollideWith.push(unitGroups)
+    }
 }
 
 // Step triggers physical laws like updating vel, pos, drag
 UnitGroup.prototype.step = function(){
     var i,l;
-    for(i=0,l=this.units.length; i++){
+    for(i=0,l=this.units.length; i<l; i++){
         this.units[i].step();
     }
 }
@@ -26,7 +31,7 @@ UnitGroup.prototype.step = function(){
 // Update frequency can be proportional to vel
 UnitGroup.prototype.draw = function(){
     this.drawPrep();
-    for(i=0,l=this.units.length; i++){
+    for(i=0,l=this.units.length; i<l; i++){
         this.units[i].draw();
     }
     this.drawFinish();
@@ -35,7 +40,7 @@ UnitGroup.prototype.draw = function(){
 // Emits collisions, vision doesn't need to checkCollisions as often
 UnitGroup.prototype.checkCollisions = function(){
     var i,l
-    for(i=0, l=this.canCollideWith.length; i++){
+    for(i=0, l=this.canCollideWith.length; i<l; i++){
         this.checkCollisionWithGroup(this.canCollideWith[i]);
     }
 }
@@ -66,14 +71,11 @@ UnitGroup.prototype.checkCollisionWithGroup = function(unitGroup){
                 unit2 = contentGroup2[j]
                 if(unit1.distanceFrom(unit2) < (unit1.radius + unit2.radius)){
                     unit1.emit('collision', unit2);
-                    unit2.emit('collision', unit1);
                 }
             }
         }
     }
 }
-
-
 
 UnitGroup.prototype.drawPrep = function(){
     // override
@@ -83,11 +85,16 @@ UnitGroup.prototype.drawFinish = function(){
     // override
 };
 
-UnitGroup.prototype.addUnit = function(unit){
+UnitGroup.prototype.add = function(unit){
+    var that = this;
+    unit.group = this;
     this.units.push(unit);
+    unit.on('destroy', function(){
+        that.remove(unit);
+    })
 };
 
-UnitGroup.prototype.removeUnit = function(unit){
+UnitGroup.prototype.remove = function(unit){
     var index = this.units.indexOf(unit);
     if(index !== -1){
         this.units.splice(index, 1);

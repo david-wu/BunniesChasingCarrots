@@ -40,7 +40,8 @@ BaseUnit.prototype.act = function(){
 }
 
 BaseUnit.prototype.destroy = function(){
-    var index = this.unitGroup.indexOf(this);
+    return
+    // var index = this.unitGroup.indexOf(this);
     if(index !== -1){
         this.unitGroup.splice(index, 1);
     }
@@ -98,7 +99,7 @@ BaseUnit.prototype.draw = function(stage, posShift){
 // this.sprite.endFill();
 
 
-stage.addChild(this.sprite);
+        stage.addChild(this.sprite);
     }
 
 
