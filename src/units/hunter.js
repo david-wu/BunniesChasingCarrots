@@ -6,15 +6,16 @@ function Hunter(options){
     var that = this;
     BaseUnit.apply(this, arguments);
     _.extend(this, {
-        radius: 10,
         color: 'red',
-        radius: 3,
+        radius: 5,
         drag: 0,
         maxVelocity: 0.5,
         pos: new Vector({
             magnitude: Math.random()*450,
             radians: Math.random()*2*Math.PI,
         }),
+        spritePath: './bunny.png',
+        tint: Math.random() * 0xFFFFFF,
     });
     _.extend(this, options);
 
@@ -27,13 +28,10 @@ function Hunter(options){
         if(_.includes(unit.type, 'food')){
             unit.emit('destroy');
         }
-        _.remove(that.vision.sees, function(n){
-            return n===unit;
-        });
         that.vision.radius = that.vision.initialRadius;
     });
 
-    UnitGroups.addUnit('hunter', this)
+    UnitGroups.addUnit('hunter', this);
 }
 
 Hunter.prototype = Object.create(BaseUnit.prototype);
@@ -45,7 +43,6 @@ Hunter.prototype.act = function(){
 }
 
 Hunter.prototype.hunt = function(){
-    // if(this.age%10!==0){return;}
     var that = this;
 
     // stops hunting previous target

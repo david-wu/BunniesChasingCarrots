@@ -4,13 +4,14 @@ var BaseUnit = require('./_baseUnit.js')
 function Food(options){
     BaseUnit.call(this, arguments);
     _.extend(this, {
+        radius: 5,
         maxVelocity: 2,
         type: ['food'],
+        spritePath: './carrot.png',
     });
-    _.extend(this, options)
+    _.extend(this, options);
 
-    UnitGroups.addUnit('food', this)
-
+    UnitGroups.addUnit('food', this);
 }
 
 Food.prototype = Object.create(BaseUnit.prototype)

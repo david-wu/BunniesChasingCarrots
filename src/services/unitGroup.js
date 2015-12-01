@@ -7,11 +7,19 @@ function UnitGroup(options){
         units: [],
         canCollideWith: [],
         collisionBounds: [],
-        collisionLatency: 3,
+        collisionCheckFrequency: 1,
+        collisionCheckCount: 0,
+        container: new PIXI.ParticleContainer(),
+        drawLevel: 0,
     });
+
+    this.parentStage.addChild(this.container);
 }
 
-UnitGroup.prototype.addCanCollideWith = function(unitGroups){
+
+UnitGroup.prototype.addCanCollideWith = function(unitGroups, frequencyFactor){
+    frequencyFactor = frequencyFactor || 1
+
     if(unitGroups instanceof Array){
         this.canCollideWith.push.apply(this.canCollideWith, unitGroups)
     }else{
@@ -29,16 +37,16 @@ UnitGroup.prototype.step = function(){
 
 // Can optimize by drawing similar things all at once
 // Update frequency can be proportional to vel
-UnitGroup.prototype.draw = function(){
-    this.drawPrep();
+UnitGroup.prototype.draw = function(offset){
+    var i=0, l;
     for(i=0,l=this.units.length; i<l; i++){
-        this.units[i].draw();
+        this.units[i].draw(this.container, offset);
     }
-    this.drawFinish();
 }
 
 // Emits collisions, vision doesn't need to checkCollisions as often
 UnitGroup.prototype.checkCollisions = function(){
+    if(this.collisionCheckCount++ % this.collisionCheckFrequency !== 0){return;}
     var i,l
     for(i=0, l=this.canCollideWith.length; i<l; i++){
         this.checkCollisionWithGroup(this.canCollideWith[i]);
@@ -86,12 +94,14 @@ UnitGroup.prototype.drawFinish = function(){
 };
 
 UnitGroup.prototype.add = function(unit){
-    var that = this;
     unit.group = this;
     this.units.push(unit);
+
     unit.on('destroy', function(){
-        that.remove(unit);
-    })
+        unit.group.remove(unit);
+    });
+
+    return this;
 };
 
 UnitGroup.prototype.remove = function(unit){

@@ -12,20 +12,6 @@ function QuadNode(options){
     this.depth = options.depth || 0;
 }
 
-// Used for quadTree demo
-QuadNode.prototype.allChildren = function(){
-    if(!this.children.length){
-        return [this];
-    }
-
-    return this.children[0].allChildren()
-        .concat(
-            this.children[1].allChildren(),
-            this.children[2].allChildren(),
-            this.children[3].allChildren()
-        );
-};
-
 // Gets relevant quadNodes for collision checking
 QuadNode.prototype.allContentNodes = function(){
     if(this.contentGroups[0] && this.contentGroups[1]){

@@ -24,7 +24,7 @@ function Forest(options){
 Forest.prototype = Object.create(BaseUnit.prototype)
 
 Forest.prototype.act = function(){
-    if(this.age%3 === 0){
+    if(this.age%10 === 0){
         this.spawnFood();
     }
 }

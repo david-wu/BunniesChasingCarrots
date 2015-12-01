@@ -4,18 +4,12 @@ var unitId = 0;
 
 function BaseUnit(){
     this.id = unitId++;
-    _.defaults(this, {
-        pos: new Vector({coords:[0, 0]}),
-        vel: new Vector({coords:[0, 0]}),
-        opacity: 1,
-        maxVelocity: 2,
-        drag: 0.1,
-        radius: 2,
-        color: 'green',
-        age: 0,
-        attributes: [],
-        commands: [],
-    });
+    this.age = 0;
+    this.radius = 2;
+    this.pos = new Vector({coords:[0, 0]}),
+    this.vel = new Vector({coords:[0, 0]}),
+    this.maxVelocity = 2;
+    this.drag = 0.1;
 
     Emitter(this);
 }
@@ -57,27 +51,27 @@ BaseUnit.prototype.draw = function(stage, posShift){
     var posCoord = pos.coords;
 
     if(!this.sprite){
-        this.sprite = new PIXI.Sprite.fromImage('./silver_coin.png');
+        if(!this.spritePath){return;}
+        this.sprite = new PIXI.Sprite.fromImage(this.spritePath);
         this.on('destroy', function(){
             var index = stage.children.indexOf(that.sprite)
             if(index !== -1){
                 stage.children.splice(index,1)
             }
         });
-        this.sprite.cacheAsBitmapboolean = true;
+        // this.sprite.cacheAsBitmapboolean = null;
         this.sprite.width = this.radius*2;
         this.sprite.height = this.radius*2;
         this.sprite.anchor.x = 0.5;
         this.sprite.anchor.y = 0.5;
-
+        this.sprite.tint = this.tint || 0xFFFFFF;
         stage.addChild(this.sprite);
     }
 
 
     this.sprite.position.x = posCoord[0]-posShift[0];
     this.sprite.position.y = posCoord[1]-posShift[1];
-
-};
+}
 
 BaseUnit.prototype.reverseVel = function(pos){
     this.vel = new Vector({

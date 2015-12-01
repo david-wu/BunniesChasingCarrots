@@ -2,57 +2,86 @@
 var UnitGroup = require('./unitGroup.js');
 
 
-function UnitGroups(options){
-    var that = this;
-
-    this.absoluteBounds = [];
-    var defaultUnitGroupOptions = {
-        collisionBounds: this.absoluteBounds
-    };
-    _.defaults(this, {
-        groups: {
-            hunterVision: new UnitGroup(defaultUnitGroupOptions),
-            food: new UnitGroup(defaultUnitGroupOptions),
-            hunter: new UnitGroup(defaultUnitGroupOptions),
-            forest: new UnitGroup(defaultUnitGroupOptions),
-        },
-    });
-    _.extend(this, options);
-
-    this.groups.hunterVision.addCanCollideWith(this.groups.food);
-    this.groups.hunter.addCanCollideWith(this.groups.food);
+function UnitGroups(){
+    this.collisionBounds = [];
+    this.groups = {}
+    this.groupsByDrawOrder = [];
 }
 
 // Overrites array with values given in bounds
-UnitGroups.prototype.setAbsoluteBounds = function(bounds){
+UnitGroups.prototype.setCollisionBounds = function(bounds){
     for(var i = 0, l = bounds.length; i<l; i++){
-        this.absoluteBounds[i] = bounds[i]
+        this.collisionBounds[i] = bounds[i];
     }
-}
-
-UnitGroups.prototype.addUnit = function(groupName, unit){
-    var group = this.groups[groupName] || this.addUnitGroup({name: groupName})
-    group.add(unit);
 };
 
-UnitGroups.prototype.addUnitGroup = function(unitGroup){
-    return this.groups[unitGroup.name] = new UnitGroup(unitGroup);
-}
+UnitGroups.prototype.setStage = function(stage){
+    this.stage = stage;
+};
+
+UnitGroups.prototype.initializeGroups = function(){
+
+    this.addUnitGroup({
+        name: 'hunterVision',
+        parentStage: this.stage,
+        collisionBounds: this.collisionBounds,
+        collisionCheckFrequency: 10,
+        draw: false,
+    });
+
+    this.addUnitGroup({
+        name: 'food',
+        parentStage: this.stage,
+        collisionBounds: this.collisionBounds,
+    });
+
+    this.addUnitGroup({
+        name: 'hunter',
+        parentStage: this.stage,
+        collisionBounds: this.collisionBounds,
+        container: new PIXI.Container(),
+    });
+
+    this.addUnitGroup({
+        name: 'forest',
+        parentStage: this.stage,
+        collisionBounds: this.collisionBounds,
+        draw: false,
+    });
+
+    this.addUnitGroup({
+        name: 'userSelectionBox',
+        parentStage: this.stage,
+        collisionBounds: this.collisionBounds,
+    });
+
+    this.groups.hunterVision.addCanCollideWith(this.groups.food);
+    this.groups.hunter.addCanCollideWith(this.groups.food);
+    this.groups.userSelectionBox.addCanCollideWith([this.groups.hunter, this.groups.food]);
+};
+
+UnitGroups.prototype.addUnit = function(groupName, unit){
+    return this.groups[groupName].add(unit);
+};
+
+UnitGroups.prototype.addUnitGroup = function(unitGroupOptions){
+    var unitGroup = new UnitGroup(unitGroupOptions);
+    this.groups[unitGroupOptions.name] = unitGroup;
+};
 
 UnitGroups.prototype.checkCollisions= function(){
     _.each(this.groups, function(group){
         group.checkCollisions();
-    })
-}
+    });
+};
 
-UnitGroups.prototype.draw = function(stage, offSet){
-    _.each(this.groups, function(group,key){
-        if(key === 'forest'){return}
-        _.each(group.units, function(unit){
-            unit.draw(stage, offSet);
-        })
-    })
-}
+UnitGroups.prototype.draw = function(offset){
+    _.each(this.groups, function(group){
+        if(group.draw){
+            group.draw(offset);
+        }
+    });
+};
 
 UnitGroups.prototype.step = function(){
     _.each(this.groups, function(group,key){
@@ -61,8 +90,8 @@ UnitGroups.prototype.step = function(){
                 unit.step();
                 unit.act();
             }
-        })
-    })
+        });
+    });
 }
 
 module.exports = new UnitGroups();

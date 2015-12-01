@@ -24,6 +24,10 @@ function Vision(options){
 
 Vision.prototype = Object.create(BaseUnit.prototype);
 
+Vision.prototype.clear = function(){
+    this.sees = [];
+}
+
 Vision.prototype.draw = _.noop;
 
 Vision.prototype.step = _.noop;

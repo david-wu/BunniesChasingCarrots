@@ -13,6 +13,9 @@ function Emitter(obj){
 function emit(callbacks, tag, payload){
     var i, l;
     var tagCallbacks = callbacks[tag];
+
+    if(tagCallbacks === undefined){return}
+
     for(i = 0, l = tagCallbacks.length; i < l; i++){
         tagCallbacks[i](payload);
     }

@@ -1,4 +1,5 @@
 
+var UserSelectionBox = require('./userSelectionBox.js');
 
 function User(){
     _.defaults(this, {
