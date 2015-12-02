@@ -1,4 +1,4 @@
-var UnitGroups = require('../services/unitGroups.js');
+var UnitGroups = require('../engine/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js');
 
 function Vision(options){
@@ -10,23 +10,14 @@ function Vision(options){
         opacity: 0.05,
         initialRadius: 50,
         radius: 50,
-        sees: [],
     });
     _.extend(this, options);
-
-    this.on('collision', function(unit){
-        that.sees.push(unit);
-    });
 
     UnitGroups.addUnit('hunterVision', this)
 }
 
 
 Vision.prototype = Object.create(BaseUnit.prototype);
-
-Vision.prototype.clear = function(){
-    this.sees = [];
-}
 
 Vision.prototype.draw = _.noop;
 

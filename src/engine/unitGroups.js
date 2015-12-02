@@ -6,6 +6,21 @@ function UnitGroups(){
     this.collisionBounds = [];
     this.groups = {}
     this.groupsByDrawOrder = [];
+
+    this.setStage(new PIXI.Container());
+}
+
+UnitGroups.prototype.setRenderer = function(renderer){
+
+  // create the root of the scene graph
+  // this.stage = new PIXI.Container();
+
+  this.renderer = renderer;
+
+  this.setCollisionBounds([-(this.renderer.width/2),-(this.renderer.height/2),(this.renderer.width/2),(this.renderer.height/2)]);
+  this.initializeGroups();
+
+
 }
 
 // Overrites array with values given in bounds
@@ -31,67 +46,57 @@ UnitGroups.prototype.initializeGroups = function(){
 
     this.addUnitGroup({
         name: 'food',
-        parentStage: this.stage,
-        collisionBounds: this.collisionBounds,
     });
 
     this.addUnitGroup({
         name: 'hunter',
-        parentStage: this.stage,
-        collisionBounds: this.collisionBounds,
         container: new PIXI.Container(),
     });
 
     this.addUnitGroup({
         name: 'forest',
-        parentStage: this.stage,
-        collisionBounds: this.collisionBounds,
         draw: false,
     });
 
-    this.addUnitGroup({
-        name: 'userSelectionBox',
-        parentStage: this.stage,
-        collisionBounds: this.collisionBounds,
-    });
-
-    this.groups.hunterVision.addCanCollideWith(this.groups.food);
+    this.groups.hunterVision.addCanCollideWith(this.groups.food, 3);
     this.groups.hunter.addCanCollideWith(this.groups.food);
-    this.groups.userSelectionBox.addCanCollideWith([this.groups.hunter, this.groups.food]);
+
 };
 
 UnitGroups.prototype.addUnit = function(groupName, unit){
     return this.groups[groupName].add(unit);
 };
 
-UnitGroups.prototype.addUnitGroup = function(unitGroupOptions){
-    var unitGroup = new UnitGroup(unitGroupOptions);
-    this.groups[unitGroupOptions.name] = unitGroup;
+UnitGroups.prototype.addUnitGroup = function(options){
+    options.parentStage = options.parentStage || this.stage;
+    options.collisionBounds = options.collisionBounds || this.collisionBounds;
+
+    var unitGroup = new UnitGroup(options);
+    this.groups[options.name] = unitGroup;
 };
 
 UnitGroups.prototype.checkCollisions= function(){
     _.each(this.groups, function(group){
-        group.checkCollisions();
-    });
-};
-
-UnitGroups.prototype.draw = function(offset){
-    _.each(this.groups, function(group){
-        if(group.draw){
-            group.draw(offset);
-        }
+        if(group.checkCollisions){group.checkCollisions();}
     });
 };
 
 UnitGroups.prototype.step = function(){
     _.each(this.groups, function(group,key){
-        _.each(group.units, function(unit){
-            if(unit){
-                unit.step();
-                unit.act();
-            }
-        });
+        if(group.step){group.step();}
     });
-}
+};
+
+UnitGroups.prototype.act = function(){
+    _.each(this.groups, function(group,key){
+        if(group.act){group.act();}
+    });
+};
+
+UnitGroups.prototype.draw = function(offset){
+    _.each(this.groups, function(group){
+        if(group.draw){group.draw(offset);}
+    });
+};
 
 module.exports = new UnitGroups();

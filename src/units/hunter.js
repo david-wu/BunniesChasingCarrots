@@ -1,4 +1,4 @@
-var UnitGroups = require('../services/unitGroups.js');
+var UnitGroups = require('../engine/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js');
 var Vision = require('./vision.js');
 
@@ -51,21 +51,17 @@ Hunter.prototype.hunt = function(){
         this.hunting = false;
     }
 
-    var foodCandidates = _.filter(this.vision.sees, function(unit){
-        return !unit.hunted;
-    });
+    var foodCandidates = _.reject(this.vision.collisions.food, 'hunted');
 
     if(foodCandidates.length){
         this.huntUnit(this.closestUnit(foodCandidates));
-        this.vision.sees = [];
         return;
     }
 
     // Stop hunting if no candidates
     this.vel.coords = [0,0];
     this.hunting = false;
-    this.vision.radius+=5;
-    this.vision.sees = [];
+    this.vision.radius += 5;
     return;
 };
 

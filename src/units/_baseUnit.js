@@ -10,6 +10,7 @@ function BaseUnit(){
     this.vel = new Vector({coords:[0, 0]}),
     this.maxVelocity = 2;
     this.drag = 0.1;
+    this.collisions = {};
 
     Emitter(this);
 }

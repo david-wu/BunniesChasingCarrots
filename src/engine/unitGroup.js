@@ -1,5 +1,5 @@
 
-var QuadNode = require('./quadNode.js');
+var QuadNode = require('../services/quadNode.js');
 
 function UnitGroup(options){
     _.extend(this, options);
@@ -13,48 +13,80 @@ function UnitGroup(options){
         drawLevel: 0,
     });
 
+    this.validate();
     this.parentStage.addChild(this.container);
 }
 
-
-UnitGroup.prototype.addCanCollideWith = function(unitGroups, frequencyFactor){
-    frequencyFactor = frequencyFactor || 1
-
-    if(unitGroups instanceof Array){
-        this.canCollideWith.push.apply(this.canCollideWith, unitGroups)
-    }else{
-        this.canCollideWith.push(unitGroups)
+UnitGroup.prototype.validate = function(){
+    if(!this.parentStage){
+        console.log('unitGroup is missing parentStage', this);
     }
 }
 
-// Step triggers physical laws like updating vel, pos, drag
+UnitGroup.prototype.addCanCollideWith = function(unitGroups, frequencyFactor){
+    if(!(unitGroups instanceof Array)){
+        unitGroups = [unitGroups];
+    }
+    frequencyFactor = frequencyFactor || 1;
+
+    this.canCollideWith.push.apply(this.canCollideWith, unitGroups);
+
+    return this.removeCanCollideWidth.bind(this, unitGroups);
+}
+
+UnitGroup.prototype.removeCanCollideWidth = function(unitGroups){
+    var that = this;
+    if(!(unitGroups instanceof Array)){
+        unitGroups = [unitGroups];
+    }
+
+    _.each(unitGroups, function(unitGroup){
+        var index = that.canCollideWith.indexOf(unitGroup);
+        if(index !== -1){
+            that.canCollideWith.splice(index, 1);
+        }
+        that.clearCollisionsWithGroup(unitGroup);
+    });
+};
+
+
+// Updates unit.collisions and emits 'collision' events
+UnitGroup.prototype.checkCollisions = function(){
+    if(this.collisionCheckCount++ % this.collisionCheckFrequency !== 0){return;}
+    var i,l;
+    for(i=0, l=this.canCollideWith.length; i<l; i++){
+        this.checkCollisionWithGroup(this.canCollideWith[i]);
+    }
+};
+
+// Triggers physical laws like updating vel, pos, drag
 UnitGroup.prototype.step = function(){
     var i,l;
     for(i=0,l=this.units.length; i<l; i++){
         this.units[i].step();
     }
-}
+};
 
-// Can optimize by drawing similar things all at once
-// Update frequency can be proportional to vel
+// Triggers unit logic like hunting, wandering
+UnitGroup.prototype.act = function(){
+    var i,l;
+    for(i=0,l=this.units.length; i<l; i++){
+        this.units[i].act();
+    }
+};
+
+// Draws
 UnitGroup.prototype.draw = function(offset){
-    var i=0, l;
+    var i,l;
     for(i=0,l=this.units.length; i<l; i++){
         this.units[i].draw(this.container, offset);
     }
-}
-
-// Emits collisions, vision doesn't need to checkCollisions as often
-UnitGroup.prototype.checkCollisions = function(){
-    if(this.collisionCheckCount++ % this.collisionCheckFrequency !== 0){return;}
-    var i,l
-    for(i=0, l=this.canCollideWith.length; i<l; i++){
-        this.checkCollisionWithGroup(this.canCollideWith[i]);
-    }
-}
+};
 
 // Faster to only check unitGroups that can collide with this
 UnitGroup.prototype.checkCollisionWithGroup = function(unitGroup){
+
+    this.clearCollisionsWithGroup(unitGroup);
 
     var qn = new QuadNode({
         contentGroups: [this.units, unitGroup.units],
@@ -76,13 +108,21 @@ UnitGroup.prototype.checkCollisionWithGroup = function(unitGroup){
         for(var i = 0, iLength = contentGroup1.length; i < iLength; i++){
             for(var j = 0, jLength = contentGroup2.length; j < jLength; j++){
                 unit1 = contentGroup1[i];
-                unit2 = contentGroup2[j]
+                unit2 = contentGroup2[j];
                 if(unit1.distanceFrom(unit2) < (unit1.radius + unit2.radius)){
                     unit1.emit('collision', unit2);
+                    unit1.collisions[unitGroup.name][unit2.id] = unit2;
                 }
             }
         }
     }
+}
+
+// Typically used to clear out current collisions with another unitGroup
+UnitGroup.prototype.clearCollisionsWithGroup = function(unitGroup){
+    _.each(this.units, function(unit){
+        unit.collisions[unitGroup.name] = {}
+    });
 }
 
 UnitGroup.prototype.drawPrep = function(){

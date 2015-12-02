@@ -1,4 +1,4 @@
-var UnitGroups = require('../services/unitGroups.js');
+var UnitGroups = require('./unitGroups.js');
 var User = require('../models/user.js');
 var UserSelectionBox = require('../models/userSelectionBox.js');
 
@@ -24,8 +24,8 @@ Engine.prototype.createInitialUnits = function(){
   this.createTestEcosystem(3, 200);
   this.createTestEcosystem(6, 400);
   this.createTestEcosystem(12, 600);
-  // this.createTestEcosystem(24, 800);
-  // this.createTestEcosystem(48, 1000);
+  this.createTestEcosystem(24, 800);
+  this.createTestEcosystem(48, 1000);
 };
 
 Engine.prototype.createTestEcosystem = function(count, radius){
@@ -54,7 +54,9 @@ Engine.prototype.tick = function(){
 
   UnitGroups.checkCollisions();
   UnitGroups.step();
+  UnitGroups.act();
   UnitGroups.draw(offSet);
+
   this.renderer.render(this.mainStage);
 
   requestAnimationFrame(this.tick.bind(this));

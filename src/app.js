@@ -2,6 +2,11 @@
 
 _ = require('lodash');
 Vector = require('./services/vector.js');
+
+
+var UnitGroups = require('./engine/unitGroups.js');
+
+
 var Engine = require('./engine/engine.js');
 
 
