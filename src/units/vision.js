@@ -1,6 +1,18 @@
 var UnitGroups = require('../engine/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js');
 
+
+UnitGroups.addUnitGroup({
+    name: 'hunterVision',
+    parentStage: this.stage,
+    collisionBounds: this.collisionBounds,
+    collisionCheckFrequency: 10,
+    draw: false,
+});
+
+UnitGroups.groups.hunterVision.addCanCollideWith('food', 3);
+
+
 function Vision(options){
     BaseUnit.apply(this, arguments);
     var that = this;

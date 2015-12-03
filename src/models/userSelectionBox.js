@@ -29,10 +29,6 @@ function UserSelectionBox(options){
     setInterval(function(){
         console.log(that.getCollisions())
     },1000)
-    setTimeout(function(){
-        that.stopCollisionDetection();
-    },10000)
-
 }
 
 UserSelectionBox.prototype = Object.create(BaseUnit.prototype);
@@ -42,11 +38,6 @@ UserSelectionBox.prototype.beginCollisionDetection = function(){
     this.stopCollisionDetection();
 
     var collisionsGroups = ['food', 'hunter'];
-
-    var collisionsGroups = _.map(collisionsGroups, function(groupName){
-        return UnitGroups.groups[groupName];
-    });
-
     this._stopDetection = this.unitGroup.addCanCollideWith(collisionsGroups, 1);
 };
 

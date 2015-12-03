@@ -1,23 +1,10 @@
 var UnitGroups = require('./unitGroups.js');
-var User = require('../models/user.js');
 var UserSelectionBox = require('../models/userSelectionBox.js');
 
-function Engine(renderer){
-  this.renderer = renderer;
-  this.mapCenter = [0, 0];
-
-  // create the root of the scene graph
-  this.mainStage = new PIXI.Container();
-
-  UnitGroups.setCollisionBounds([-(this.renderer.width/2),-(this.renderer.height/2),(this.renderer.width/2),(this.renderer.height/2)]);
-  UnitGroups.setStage(this.mainStage);
-  UnitGroups.initializeGroups();
-
-
-  this.createInitialUnits();
+function Engine(){
 
   var selBox = new UserSelectionBox();
-
+  this.createInitialUnits();
 }
 
 Engine.prototype.createInitialUnits = function(){
@@ -32,6 +19,7 @@ Engine.prototype.createTestEcosystem = function(count, radius){
   var Hunter = require('../units/hunter.js');
   var Forest = require('../units/forest.js');
   var that = this;
+
   _.times(count, function(i){
     var forest = new Forest({pos: new Vector({magnitude:radius, radians: i/count*2*Math.PI})});
     _.times(10, function(){
@@ -50,15 +38,7 @@ Engine.prototype.start = function(){
 };
 
 Engine.prototype.tick = function(){
-  var offSet = [this.mapCenter[0] - (this.renderer.width/2), this.mapCenter[1] - (this.renderer.height/2)];
-
-  UnitGroups.checkCollisions();
-  UnitGroups.step();
-  UnitGroups.act();
-  UnitGroups.draw(offSet);
-
-  this.renderer.render(this.mainStage);
-
+  UnitGroups.tick();
   requestAnimationFrame(this.tick.bind(this));
 };
 

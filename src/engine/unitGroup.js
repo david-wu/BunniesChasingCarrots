@@ -1,4 +1,5 @@
 
+
 var QuadNode = require('../services/quadNode.js');
 
 function UnitGroup(options){
@@ -28,7 +29,6 @@ UnitGroup.prototype.addCanCollideWith = function(unitGroups, frequencyFactor){
         unitGroups = [unitGroups];
     }
     frequencyFactor = frequencyFactor || 1;
-
     this.canCollideWith.push.apply(this.canCollideWith, unitGroups);
 
     return this.removeCanCollideWidth.bind(this, unitGroups);
@@ -49,88 +49,67 @@ UnitGroup.prototype.removeCanCollideWidth = function(unitGroups){
     });
 };
 
-
-// Updates unit.collisions and emits 'collision' events
+// Updates unit.collisions array and emits 'collision' events
 UnitGroup.prototype.checkCollisions = function(){
     if(this.collisionCheckCount++ % this.collisionCheckFrequency !== 0){return;}
-    var i,l;
-    for(i=0, l=this.canCollideWith.length; i<l; i++){
+
+    this.parent.convertNamesToGroups(this.canCollideWith);
+
+    for(var i=0, l=this.canCollideWith.length; i<l; i++){
         this.checkCollisionWithGroup(this.canCollideWith[i]);
     }
 };
 
-// Triggers physical laws like updating vel, pos, drag
+// Runs physical laws like updating vel, pos, drag
 UnitGroup.prototype.step = function(){
-    var i,l;
-    for(i=0,l=this.units.length; i<l; i++){
+    for(var i=0, l=this.units.length; i<l; i++){
         this.units[i].step();
     }
 };
 
-// Triggers unit logic like hunting, wandering
+// Runs unit logic like hunting, wandering
 UnitGroup.prototype.act = function(){
-    var i,l;
-    for(i=0,l=this.units.length; i<l; i++){
+    for(var i=0, l=this.units.length; i<l; i++){
         this.units[i].act();
     }
 };
 
-// Draws
 UnitGroup.prototype.draw = function(offset){
-    var i,l;
-    for(i=0,l=this.units.length; i<l; i++){
+    for(var i=0, l=this.units.length; i<l; i++){
         this.units[i].draw(this.container, offset);
     }
 };
 
-// Faster to only check unitGroups that can collide with this
+// Checks for collisions with units of another unitGroup
 UnitGroup.prototype.checkCollisionWithGroup = function(unitGroup){
 
     this.clearCollisionsWithGroup(unitGroup);
 
-    var qn = new QuadNode({
-        contentGroups: [this.units, unitGroup.units],
-        bounds: this.collisionBounds,
-    });
+    var quadNodes = this.getQuadNodes(unitGroup);
+    for(var m = 0, n = quadNodes.length; m < n; m++){
 
-    var contentNodes = qn.allContentNodes();
-
-    var m, n, contentNode;
-    for(m=0, n=contentNodes.length; m<n; m++){
-        contentNode = contentNodes[m];
-
-        var contentGroup1 = contentNode.contentGroups[0];
-        var contentGroup2 = contentNode.contentGroups[1];
-
-        var i, j, iLength, jLength;
-        var unit1;
-        var unit2;
-        for(var i = 0, iLength = contentGroup1.length; i < iLength; i++){
-            for(var j = 0, jLength = contentGroup2.length; j < jLength; j++){
-                unit1 = contentGroup1[i];
-                unit2 = contentGroup2[j];
-                if(unit1.distanceFrom(unit2) < (unit1.radius + unit2.radius)){
-                    unit1.emit('collision', unit2);
-                    unit1.collisions[unitGroup.name][unit2.id] = unit2;
-                }
+        var group1 = quadNodes[m].contentGroups[0];
+        var group2 = quadNodes[m].contentGroups[1];
+        for(var i = 0, iLength = group1.length; i < iLength; i++){
+            for(var j = 0, jLength = group2.length; j < jLength; j++){
+                group1[i].checkCollision(group2[j])
             }
         }
     }
 }
 
-// Typically used to clear out current collisions with another unitGroup
-UnitGroup.prototype.clearCollisionsWithGroup = function(unitGroup){
-    _.each(this.units, function(unit){
-        unit.collisions[unitGroup.name] = {}
-    });
-}
-
-UnitGroup.prototype.drawPrep = function(){
-    // override
+UnitGroup.prototype.getQuadNodes = function(unitGroup){
+    return new QuadNode({
+        contentGroups: [this.units, unitGroup.units],
+        bounds: this.collisionBounds,
+    }).allContentNodes();
 };
 
-UnitGroup.prototype.drawFinish = function(){
-    // override
+// Clears out stale collisions with another unitGroup
+UnitGroup.prototype.clearCollisionsWithGroup = function(unitGroup){
+    _.each(this.units, function(unit){
+        unit.collisions[unitGroup] = {};
+    });
 };
 
 UnitGroup.prototype.add = function(unit){
@@ -149,6 +128,10 @@ UnitGroup.prototype.remove = function(unit){
     if(index !== -1){
         this.units.splice(index, 1);
     }
+};
+
+UnitGroup.prototype.toString = function(){
+    return this.name;
 };
 
 module.exports = UnitGroup;

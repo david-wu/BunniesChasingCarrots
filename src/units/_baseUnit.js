@@ -34,16 +34,25 @@ BaseUnit.prototype.closestUnit = function(units){
     });
 };
 
-BaseUnit.prototype.distanceFrom = function(unit){
-    var pos1 = this.pos || this.parent.pos;
-    var pos2 = unit.pos || unit.parent.pos;
-    return pos1.distanceFrom(pos2);
-};
-
+// An approximation 'box' around object for cheap detection with quadNodes
 BaseUnit.prototype.hitBox = function(){
     var pos = this.pos || this.parent.pos;
     var coords = pos.coords;
     return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
+};
+
+//A more expensive method to actually detect collision after finding possible collisions
+BaseUnit.prototype.checkCollision = function(unit){
+    if(this.distanceFrom(unit) < (this.radius + unit.radius)){
+        this.emit('collision', unit);
+        this.collisions[unit.group.name][unit.id] = unit;
+    }
+};
+
+BaseUnit.prototype.distanceFrom = function(unit){
+    var pos1 = this.pos || this.parent.pos;
+    var pos2 = unit.pos || unit.parent.pos;
+    return pos1.distanceFrom(pos2);
 };
 
 BaseUnit.prototype.draw = function(stage, posShift){

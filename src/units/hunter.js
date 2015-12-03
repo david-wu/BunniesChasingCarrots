@@ -2,6 +2,14 @@ var UnitGroups = require('../engine/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js');
 var Vision = require('./vision.js');
 
+UnitGroups.addUnitGroup({
+    name: 'hunter',
+    container: new PIXI.Container(),
+});
+
+UnitGroups.groups.hunter.addCanCollideWith('food');
+
+
 function Hunter(options){
     var that = this;
     BaseUnit.apply(this, arguments);

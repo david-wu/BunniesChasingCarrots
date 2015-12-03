@@ -1,6 +1,10 @@
 var UnitGroups = require('../engine/unitGroups.js');
 var BaseUnit = require('./_baseUnit.js')
 
+UnitGroups.addUnitGroup({
+    name: 'food',
+});
+
 function Food(options){
     BaseUnit.call(this, arguments);
     _.extend(this, {

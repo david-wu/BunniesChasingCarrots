@@ -3,6 +3,12 @@ var BaseUnit = require('./_baseUnit.js');
 var UnitGroups = require('../engine/unitGroups.js');
 
 
+UnitGroups.addUnitGroup({
+    name: 'forest',
+    draw: false,
+});
+
+
 function Forest(options){
     BaseUnit.apply(this, arguments);
     _.extend(this, {

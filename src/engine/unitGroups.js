@@ -1,79 +1,56 @@
+/*
+    UnitGroups is a singleton/global that manages unitGroup instances
+    Units are automatically added into UnitGroups
+    Engine runs collision, step, act, and draw steps
+    Requires a PIXI renderer to be set
+*/
 
 var UnitGroup = require('./unitGroup.js');
 
-
 function UnitGroups(){
-    this.collisionBounds = [];
-    this.groups = {}
+    this.groups = {};
     this.groupsByDrawOrder = [];
+    this.mapCenter = [0, 0];
+    this.collisionBounds = [0, 0, 0, 0];
 
-    this.setStage(new PIXI.Container());
+    this.stage = new PIXI.Container();
 }
 
 UnitGroups.prototype.setRenderer = function(renderer){
-
-  // create the root of the scene graph
-  // this.stage = new PIXI.Container();
-
   this.renderer = renderer;
+  this.modifyCollisionBounds([-this.renderer.width/2, -this.renderer.height/2, this.renderer.width/2, this.renderer.height/2]);
+};
 
-  this.setCollisionBounds([-(this.renderer.width/2),-(this.renderer.height/2),(this.renderer.width/2),(this.renderer.height/2)]);
-  this.initializeGroups();
-
-
-}
-
-// Overrites array with values given in bounds
-UnitGroups.prototype.setCollisionBounds = function(bounds){
-    for(var i = 0, l = bounds.length; i<l; i++){
+UnitGroups.prototype.modifyCollisionBounds = function(bounds){
+    for(var i = 0, l = bounds.length; i < l; i++){
         this.collisionBounds[i] = bounds[i];
     }
 };
 
-UnitGroups.prototype.setStage = function(stage){
-    this.stage = stage;
+UnitGroups.prototype.addUnitGroup = function(options){
+    options.parent = this;
+    options.parentStage = options.parentStage || this.stage;
+    options.collisionBounds = options.collisionBounds || this.collisionBounds;
+
+    this.groups[options.name] = new UnitGroup(options);
 };
 
-UnitGroups.prototype.initializeGroups = function(){
-
-    this.addUnitGroup({
-        name: 'hunterVision',
-        parentStage: this.stage,
-        collisionBounds: this.collisionBounds,
-        collisionCheckFrequency: 10,
-        draw: false,
-    });
-
-    this.addUnitGroup({
-        name: 'food',
-    });
-
-    this.addUnitGroup({
-        name: 'hunter',
-        container: new PIXI.Container(),
-    });
-
-    this.addUnitGroup({
-        name: 'forest',
-        draw: false,
-    });
-
-    this.groups.hunterVision.addCanCollideWith(this.groups.food, 3);
-    this.groups.hunter.addCanCollideWith(this.groups.food);
-
+UnitGroups.prototype.convertNamesToGroups = function(array){
+    for(var i=0, l=array.length; i<l; i++){
+        array[i] = this.groups[array[i]];
+    }
 };
 
 UnitGroups.prototype.addUnit = function(groupName, unit){
     return this.groups[groupName].add(unit);
 };
 
-UnitGroups.prototype.addUnitGroup = function(options){
-    options.parentStage = options.parentStage || this.stage;
-    options.collisionBounds = options.collisionBounds || this.collisionBounds;
-
-    var unitGroup = new UnitGroup(options);
-    this.groups[options.name] = unitGroup;
-};
+UnitGroups.prototype.tick = function(){
+    this.checkCollisions();
+    this.step();
+    this.act();
+    this.draw();
+}
 
 UnitGroups.prototype.checkCollisions= function(){
     _.each(this.groups, function(group){
@@ -93,10 +70,14 @@ UnitGroups.prototype.act = function(){
     });
 };
 
-UnitGroups.prototype.draw = function(offset){
+UnitGroups.prototype.draw = function(){
+    var offset = [this.mapCenter[0] - (this.renderer.width/2), this.mapCenter[1] - (this.renderer.height/2)];
+
     _.each(this.groups, function(group){
         if(group.draw){group.draw(offset);}
     });
+    this.renderer.render(this.stage);
 };
 
 module.exports = new UnitGroups();
+
