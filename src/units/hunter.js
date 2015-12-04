@@ -59,10 +59,33 @@ Hunter.prototype.hunt = function(){
         this.hunting = false;
     }
 
-    var foodCandidates = _.reject(this.vision.collisions.food, 'hunted');
+    var candidateKeys = Object.keys(this.vision.collisions.food);
+    var closestUnit, closestDistance
+    for(var i=0,l=candidateKeys.length; i<l; i++){
+        var unit = this.vision.collisions.food[candidateKeys[i]];
+        if(unit.hunted){
+            continue;
+        }
 
-    if(foodCandidates.length){
-        this.huntUnit(this.closestUnit(foodCandidates));
+        if(!closestUnit){
+            closestUnit = unit;
+        }else{
+
+            // Don't calculate distanceFrom(closestUnit) until there is another possible closestUnit
+            if(closestDistance === undefined){
+                closestDistance = this.distanceFrom(closestUnit);
+            }
+
+            var contendingDistance = this.distanceFrom(unit);
+            if(contendingDistance < closestDistance){
+                closestDistance = contendingDistance;
+                closestUnit = unit;
+            }
+        }
+    }
+
+    if(closestUnit){
+        this.huntUnit(closestUnit)
         return;
     }
 
@@ -70,10 +93,7 @@ Hunter.prototype.hunt = function(){
     this.vel.coords = [0,0];
     this.hunting = false;
     this.vision.radius += 5;
-    return;
 };
-
-Hunter.prototype.wander = function(){}
 
 Hunter.prototype.huntUnit = function(unit){
     this.hunting = unit;

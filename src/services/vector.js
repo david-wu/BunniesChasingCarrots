@@ -18,16 +18,30 @@ Vector.subtract = function(v1,v2){
     return v1.add(v2.inverse());
 };
 
-Vector.prototype.setMagnitude = function(mag){
-    var ratio = mag/Math.hypot.apply(null, this.coords);
-    return new Vector({
-        coords: _.map(this.coords, function(d){return d*ratio})
-    })
-}
-
 Vector.prototype.magnitude = function(){
     if(this.magnitude){return this.magnitude;}
     return Math.hypot(this.coords);
+}
+
+// Optional second vector parameter for recycling
+Vector.prototype.setMagnitude = function(mag, v){
+    var ratio = mag/Math.hypot.apply(null, this.coords);
+
+    if(v === undefined){
+        var newCoords = [];
+        for(var i=0,l=this.coords.length; i<l; i++){
+            newCoords[i] = this.coords[i]*ratio;
+        }
+
+        return new Vector({
+            coords: newCoords,
+        });
+    }else{
+        for(var i=0,l=this.coords.length; i<l; i++){
+            v.coords[i] = this.coords[i]*ratio;
+        }
+    }
+
 }
 
 Vector.prototype.applyLinearDrag = function(k){
@@ -36,12 +50,25 @@ Vector.prototype.applyLinearDrag = function(k){
     }
 }
 
-Vector.prototype.add = function(v2){
-    return Vector.add(this, v2);
+// Optional second vector parameter for recycling
+Vector.prototype.add = function(v2, v){
+    if(v === undefined){
+        return Vector.add(this, v2);
+    }else{
+        v.coords[0] = this.coords[0] + v2.coords[0];
+        v.coords[1] = this.coords[1] + v2.coords[1];
+    }
 }
 
-Vector.prototype.subtract = function(v2){
-    return Vector.subtract(this, v2);
+// Optional second vector parameter for recycling
+Vector.prototype.subtract = function(v2, v){
+    if(v === undefined){
+        return Vector.subtract(this, v2);
+    }else{
+        v.coords[0] = this.coords[0] - v2.coords[0];
+        v.coords[1] = this.coords[1] - v2.coords[1];
+        return v;
+    }
 }
 
 Vector.prototype.distanceFrom = function(v2){
@@ -56,9 +83,13 @@ Vector.prototype.distanceFrom = function(v2){
 };
 
 Vector.prototype.inverse = function(){
+    var newCoords = []
+    for(var i=0,l=this.coords.length; i<l; i++){
+        newCoords[i] = -this.coords[i];
+    }
     return new Vector({
-        coords: _.map(this.coords, function(d){return -d;})
-    });
+        coords: newCoords,
+    })
 }
 
 module.exports = Vector;

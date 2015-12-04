@@ -17,7 +17,7 @@ function BaseUnit(){
 
 BaseUnit.prototype.step = function(){
     if(!this.pos){return;}
-    this.pos = this.pos.add(this.vel);
+    this.pos.add(this.vel, this.pos);
     this.vel.applyLinearDrag(this.drag);
     this.age++;
 };
@@ -92,7 +92,9 @@ BaseUnit.prototype.reverseVel = function(pos){
 // Changes unit's velocity to go towards a position vector
 BaseUnit.prototype.goto = function(pos){
     if(!pos){return;}
-    this.vel = pos.subtract(this.pos).setMagnitude(this.maxVelocity);
+
+    pos.subtract(this.pos, this.vel)
+    this.vel.setMagnitude(this.maxVelocity, this.vel);
 };
 
 BaseUnit.prototype.fleeFrom = function(pos){

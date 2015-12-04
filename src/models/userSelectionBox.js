@@ -19,16 +19,16 @@ function UserSelectionBox(options){
         })
         this.unitGroup = UnitGroups.groups.userSelectionBox;
     }
-    this.unitGroup.add(this)
+    // this.unitGroup.add(this)
 
-    this.beginCollisionDetection();
+    // this.beginCollisionDetection();
 
 
 
-    var that = this;
-    setInterval(function(){
-        console.log(that.getCollisions())
-    },1000)
+    // var that = this;
+    // setInterval(function(){
+    //     console.log(that.getCollisions())
+    // },1000)
 }
 
 UserSelectionBox.prototype = Object.create(BaseUnit.prototype);

@@ -37,7 +37,9 @@ UnitGroups.prototype.addUnitGroup = function(options){
 
 UnitGroups.prototype.convertNamesToGroups = function(array){
     for(var i=0, l=array.length; i<l; i++){
-        array[i] = this.groups[array[i]];
+        if(typeof array[i] === 'string'){
+            array[i] = this.groups[array[i]];
+        }
     }
 };
 
@@ -53,29 +55,37 @@ UnitGroups.prototype.tick = function(){
 }
 
 UnitGroups.prototype.checkCollisions= function(){
-    _.each(this.groups, function(group){
-        if(group.checkCollisions){group.checkCollisions();}
-    });
+    var groupKeys = Object.keys(this.groups);
+    for(var i=0, l=groupKeys.length; i<l; i++){
+        var group = this.groups[groupKeys[i]]
+        if(group){group.checkCollisions();}
+    }
 };
 
 UnitGroups.prototype.step = function(){
-    _.each(this.groups, function(group,key){
+    var groupKeys = Object.keys(this.groups);
+    for(var i=0,l=groupKeys.length; i<l; i++){
+        var group = this.groups[groupKeys[i]];
         if(group.step){group.step();}
-    });
+    }
 };
 
 UnitGroups.prototype.act = function(){
-    _.each(this.groups, function(group,key){
+    var groupKeys = Object.keys(this.groups);
+    for(var i=0,l=groupKeys.length; i<l; i++){
+        var group = this.groups[groupKeys[i]];
         if(group.act){group.act();}
-    });
+    }
 };
 
 UnitGroups.prototype.draw = function(){
     var offset = [this.mapCenter[0] - (this.renderer.width/2), this.mapCenter[1] - (this.renderer.height/2)];
 
-    _.each(this.groups, function(group){
+    var groupKeys = Object.keys(this.groups);
+    for(var i=0,l=groupKeys.length; i<l; i++){
+        var group = this.groups[groupKeys[i]];
         if(group.draw){group.draw(offset);}
-    });
+    }
     this.renderer.render(this.stage);
 };
 

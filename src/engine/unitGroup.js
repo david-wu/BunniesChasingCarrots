@@ -107,9 +107,9 @@ UnitGroup.prototype.getQuadNodes = function(unitGroup){
 
 // Clears out stale collisions with another unitGroup
 UnitGroup.prototype.clearCollisionsWithGroup = function(unitGroup){
-    _.each(this.units, function(unit){
-        unit.collisions[unitGroup] = {};
-    });
+    for(var i=0, l=this.units.length; i<l; i++){
+        this.units[i].collisions[unitGroup.name] = {};
+    }
 };
 
 UnitGroup.prototype.add = function(unit){

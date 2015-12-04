@@ -7,12 +7,10 @@ UnitGroups.addUnitGroup({
 
 function Food(options){
     BaseUnit.call(this, arguments);
-    _.extend(this, {
-        radius: 5,
-        maxVelocity: 2,
-        type: ['food'],
-        spritePath: './carrot.png',
-    });
+    this.radius = 5;
+    this.maxVelocity = 2;
+    this.type = ['food'];
+    this.spritePath = './carrot.png';
     _.extend(this, options);
 
     UnitGroups.addUnit('food', this);
