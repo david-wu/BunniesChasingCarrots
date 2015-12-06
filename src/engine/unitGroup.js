@@ -1,8 +1,8 @@
 
-
 var QuadNode = require('../services/quadNode.js');
 
 function UnitGroup(options){
+    UnitGroup.validate(options);
     _.extend(this, options);
     _.defaults(this, {
         units: [],
@@ -14,13 +14,12 @@ function UnitGroup(options){
         drawLevel: 0,
     });
 
-    this.validate();
     this.parentStage.addChild(this.container);
 }
 
-UnitGroup.prototype.validate = function(){
-    if(!this.parentStage){
-        console.log('unitGroup is missing parentStage', this);
+UnitGroup.validate = function(options){
+    if(!options.parentStage){
+        console.log('unitGroup requires parentStage');
     }
 }
 
@@ -50,6 +49,8 @@ UnitGroup.prototype.removeCanCollideWidth = function(unitGroups){
 };
 
 // Updates unit.collisions array and emits 'collision' events
+// A posisble problem is that a unitGroup can only has a single collisionCheckFrequency
+// Different groups it can collide with don't have its own collisionCheckFrequency
 UnitGroup.prototype.checkCollisions = function(){
     if(this.collisionCheckCount++ % this.collisionCheckFrequency !== 0){return;}
 

@@ -1,5 +1,4 @@
 var Emitter = require('../services/emitter.js');
-
 var unitId = 0;
 
 function BaseUnit(){
@@ -15,6 +14,17 @@ function BaseUnit(){
     Emitter(this);
 }
 
+// For planning action trees
+BaseUnit.prototype.fitness = function(){
+
+}
+
+// Runs action root tree node
+BaseUnit.prototype.act = function(){
+
+};
+
+// Runs physical laws like updating vel, pos, drag
 BaseUnit.prototype.step = function(){
     if(!this.pos){return;}
     this.pos.add(this.vel, this.pos);
@@ -22,30 +32,17 @@ BaseUnit.prototype.step = function(){
     this.age++;
 };
 
-BaseUnit.prototype.act = function(){
-
-}
-
-BaseUnit.prototype.closestUnit = function(units){
-    var that = this;
-    return _.min(units, function(unit){
-        if(unit === that){return;}
-        return that.distanceFrom(unit);
-    });
-};
-
-// An approximation 'box' around object for cheap detection with quadNodes
+// An approximation 'box' around object for detecting potential collisions (also for quadTree)
 BaseUnit.prototype.hitBox = function(){
     var pos = this.pos || this.parent.pos;
     var coords = pos.coords;
     return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
 };
 
-//A more expensive method to actually detect collision after finding possible collisions
+// A more expensive method to actually detecting collision after finding potential collisions
 BaseUnit.prototype.checkCollision = function(unit){
     if(this.distanceFrom(unit) < (this.radius + unit.radius)){
-        this.emit('collision', unit);
-        this.collisions[unit.group.name][unit.id] = unit;
+        this.triggerCollision(unit);
     }
 };
 
@@ -54,6 +51,11 @@ BaseUnit.prototype.distanceFrom = function(unit){
     var pos2 = unit.pos || unit.parent.pos;
     return pos1.distanceFrom(pos2);
 };
+
+BaseUnit.prototype.triggerCollision = function(unit){
+        this.emit('collision', unit);
+        this.collisions[unit.group.name][unit.id] = unit;
+}
 
 BaseUnit.prototype.draw = function(stage, posShift){
     var that = this;
@@ -69,7 +71,7 @@ BaseUnit.prototype.draw = function(stage, posShift){
                 stage.children.splice(index,1)
             }
         });
-        // this.sprite.cacheAsBitmapboolean = null;
+
         this.sprite.width = this.radius*2;
         this.sprite.height = this.radius*2;
         this.sprite.anchor.x = 0.5;
@@ -78,9 +80,14 @@ BaseUnit.prototype.draw = function(stage, posShift){
         stage.addChild(this.sprite);
     }
 
+    if(this.selected){
+        this.sprite.tint = 0x00FF00
+    }else{
+        this.sprite.tint = this.tint;
+    }
 
-    this.sprite.position.x = posCoord[0]-posShift[0];
-    this.sprite.position.y = posCoord[1]-posShift[1];
+    this.sprite.position.x = posCoord[0] - posShift[0];
+    this.sprite.position.y = posCoord[1] - posShift[1];
 }
 
 BaseUnit.prototype.reverseVel = function(pos){
