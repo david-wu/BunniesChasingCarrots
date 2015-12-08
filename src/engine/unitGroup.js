@@ -93,7 +93,8 @@ UnitGroup.prototype.checkCollisionWithGroup = function(unitGroup){
         var group2 = quadNodes[m].contentGroups[1];
         for(var i = 0, iLength = group1.length; i < iLength; i++){
             for(var j = 0, jLength = group2.length; j < jLength; j++){
-                group1[i].checkCollision(group2[j])
+                // group1[i].checkCollision(group2[j])
+                group1[i].checkCollisionCheap(group2[j])
             }
         }
     }
@@ -103,23 +104,25 @@ UnitGroup.prototype.getQuadNodes = function(unitGroup){
     return new QuadNode({
         contentGroups: [this.units, unitGroup.units],
         bounds: this.collisionBounds,
-    }).allContentNodes();
+    }).divide().allContentNodes();
 };
 
-// Clears out stale collisions with another unitGroup
+// Clears out stale collisions and boxBounds with another unitGroup
 UnitGroup.prototype.clearCollisionsWithGroup = function(unitGroup){
     for(var i=0, l=this.units.length; i<l; i++){
         this.units[i].collisions[unitGroup.name] = {};
+        this.units[i].boxBounds = undefined;
     }
+
+    for(var j=0, k=unitGroup.units.length; j<k; j++){
+        unitGroup.units[j].boxBounds = undefined;
+    }
+
 };
 
 UnitGroup.prototype.add = function(unit){
     unit.group = this;
     this.units.push(unit);
-
-    unit.on('destroy', function(){
-        unit.group.remove(unit);
-    });
 
     return this;
 };

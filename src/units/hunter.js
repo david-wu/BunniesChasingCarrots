@@ -5,9 +5,10 @@ var Vision = require('./vision.js');
 UnitGroups.addUnitGroup({
     name: 'hunter',
     container: new PIXI.Container(),
+    collisionCheckFrequency: 2,
 });
 
-UnitGroups.groups.hunter.addCanCollideWith('food',2);
+UnitGroups.groups.hunter.addCanCollideWith('food');
 
 
 function Hunter(options){
@@ -18,10 +19,7 @@ function Hunter(options){
         radius: 5,
         drag: 0,
         maxVelocity: 0.5,
-        pos: new Vector({
-            magnitude: Math.random()*450,
-            radians: Math.random()*2*Math.PI,
-        }),
+        pos: Vector(Math.random()*2*Math.PI, Math.random()*450),
         spritePath: './bunny.png',
         tint: Math.random() * 0xFFFFFF,
     });
@@ -32,19 +30,18 @@ function Hunter(options){
         parent: this,
     });
 
-    this.on('collision', function(unit){
-        if(_.includes(unit.type, 'food')){
-            unit.emit('destroy');
-        }
-        that.vision.radius = that.vision.initialRadius;
-    });
-
     UnitGroups.addUnit('hunter', this);
 }
 
 Hunter.prototype = Object.create(BaseUnit.prototype);
 
 Hunter.prototype.act = function(){
+    var foodIds = Object.keys(this.collisions.food)
+    for(var i=0, l=foodIds.length; i<l; i++){
+        this.collisions.food[foodIds[i]].destroy();
+        this.vision.radius = this.vision.initialRadius;
+    }
+
     if(this.age%5 === 0){
         this.hunt();
     }
@@ -60,6 +57,7 @@ Hunter.prototype.hunt = function(){
     }
 
     var candidateKeys = Object.keys(this.vision.collisions.food);
+
     var closestUnit, closestDistance
     for(var i=0,l=candidateKeys.length; i<l; i++){
         var unit = this.vision.collisions.food[candidateKeys[i]];

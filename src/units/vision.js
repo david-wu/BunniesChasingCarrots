@@ -6,11 +6,11 @@ UnitGroups.addUnitGroup({
     name: 'hunterVision',
     parentStage: this.stage,
     collisionBounds: this.collisionBounds,
-    collisionCheckFrequency: 5,
+    collisionCheckFrequency: 10,
     draw: false,
 });
 
-UnitGroups.groups.hunterVision.addCanCollideWith('food', 3);
+UnitGroups.groups.hunterVision.addCanCollideWith('food');
 
 
 function Vision(options){
@@ -21,8 +21,8 @@ function Vision(options){
         pos: undefined,
         color: 'blue',
         opacity: 0.05,
-        initialRadius: 50,
-        radius: 50,
+        initialRadius: 100,
+        radius: 100,
     });
     _.extend(this, options);
 

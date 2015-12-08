@@ -1,13 +1,13 @@
 // Optimum depends on:
 // Area of smallest quadNode's bounds and size of units
-var maxDepth = 5;
-var maxCalculationsPerQuadNode = 200;
+var maxDepth = 6;
+var maxCalculationsPerQuadNode = 100;
 
 function QuadNode(options){
     this.tree = options.tree;
     this.bounds = options.bounds;
 
-    this.contentGroups = options.contentGroups || [];
+    this.contentGroups = options.contentGroups || [[],[]];
     this.children = options.children || [];
     this.depth = options.depth || 0;
 }
@@ -47,6 +47,7 @@ QuadNode.prototype.divide = function(){
             }
         }
     };
+    return this;
 };
 
 QuadNode.prototype.createChildren = function(){
@@ -83,7 +84,6 @@ QuadNode.prototype.createChildren = function(){
 // Divides contents into the quadNode's children
 QuadNode.prototype.divideContents = function(){
     var that = this;
-    var hitCache = this.tree.hitBoxCache
 
     if(this.children.length === 0){return;}
 
@@ -95,12 +95,13 @@ QuadNode.prototype.divideContents = function(){
 
         for(j=0,k=contentGroup.length; j < k; j++){
             unit = contentGroup[j];
-            hitCache[unit.id] = hitCache[unit.id] || unit.hitBox();
+            if(unit.boxBounds === undefined){
+                unit.boxBounds = unit.hitBox();
+            }
 
             for(m=0,n=4; m < n; m++){
                 child = this.children[m];
-                if(child.contains(hitCache[unit.id])){
-                    child.contentGroups[i] = child.contentGroups[i] || [];
+                if(child.contains(unit.boxBounds)){
                     child.contentGroups[i].push(unit);
                 }
             }
@@ -119,10 +120,8 @@ QuadNode.prototype.contains = function(unitBox){
 };
 
 function QuadTree(qnOptions){
-    this.hitBoxCache = {};
     qnOptions.tree = this;
     this.root = new QuadNode(qnOptions);
-    this.root.divide();
 
     return this.root;
 }

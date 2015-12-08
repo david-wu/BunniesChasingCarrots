@@ -16,10 +16,7 @@ function Forest(options){
         opacity: 0.1,
         maxVelocity: 2,
         type: ['forest'],
-        pos: new Vector({
-            magnitude: 200,
-            radians: Math.random()*2*Math.PI,
-        }),
+        pos: Vector.radial(Math.random()*2*Math.PI, 200),
     });
     _.extend(this, options)
 
@@ -40,10 +37,7 @@ Forest.prototype.step = function(){
 
 // Randomly spawns a food within forest
 Forest.prototype.spawnFood = function(units){
-    var foodPos = this.pos.add(new Vector({
-        magnitude: this.radius*Math.random(),
-        radians: Math.PI*2*Math.random(),
-    }));
+    var foodPos = this.pos.add(Vector.radial(Math.PI*2*Math.random(), this.radius*Math.random()));
 
     new Food({
         pos: foodPos,

@@ -82,10 +82,7 @@ function WanderMixin(unit, scope){
 }
 
 function wander(){
-    this.vel = new Vector({
-        radians: Math.PI*2*Math.random(),
-        magnitude: this.maxVelocity,
-    });
+    this.vel = Vector.radial(Math.PI*2*Math.random(), this.maxVelocity);
 };
 
 

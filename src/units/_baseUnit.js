@@ -5,13 +5,11 @@ function BaseUnit(){
     this.id = unitId++;
     this.age = 0;
     this.radius = 2;
-    this.pos = new Vector({coords:[0, 0]}),
-    this.vel = new Vector({coords:[0, 0]}),
+    this.pos = new Vector([0, 0]),
+    this.vel = new Vector([0, 0]),
     this.maxVelocity = 2;
     this.drag = 0.1;
     this.collisions = {};
-
-    Emitter(this);
 }
 
 // For planning action trees
@@ -39,10 +37,22 @@ BaseUnit.prototype.hitBox = function(){
     return [coords[0]-this.radius, coords[1]-this.radius, coords[0]+this.radius, coords[1]+this.radius];
 };
 
-// A more expensive method to actually detecting collision after finding potential collisions
+// Detects if hitboxes collide
+BaseUnit.prototype.checkCollisionCheap = function(unit){
+    this.boxBounds = this.boxBounds || this.hitBox();
+    unit.boxBounds = unit.boxBounds || unit.hitBox();
+
+    if(unit.boxBounds[0] < this.boxBounds[2] && unit.boxBounds[2] > this.boxBounds[0]){
+        if(unit.boxBounds[1] < this.boxBounds[3] && unit.boxBounds[3] > this.boxBounds[1]){
+            this.collisions[unit.group.name][unit.id] = unit;
+        }
+    }
+};
+
+// A more expensive method to detect collision within radius
 BaseUnit.prototype.checkCollision = function(unit){
     if(this.distanceFrom(unit) < (this.radius + unit.radius)){
-        this.triggerCollision(unit);
+        this.collisions[unit.group.name][unit.id] = unit;
     }
 };
 
@@ -52,25 +62,15 @@ BaseUnit.prototype.distanceFrom = function(unit){
     return pos1.distanceFrom(pos2);
 };
 
-BaseUnit.prototype.triggerCollision = function(unit){
-        this.emit('collision', unit);
-        this.collisions[unit.group.name][unit.id] = unit;
-}
-
 BaseUnit.prototype.draw = function(stage, posShift){
     var that = this;
     var pos = this.pos || this.parent.pos;
     var posCoord = pos.coords;
+    this.stage = stage;
 
     if(!this.sprite){
         if(!this.spritePath){return;}
         this.sprite = new PIXI.Sprite.fromImage(this.spritePath);
-        this.on('destroy', function(){
-            var index = stage.children.indexOf(that.sprite)
-            if(index !== -1){
-                stage.children.splice(index,1)
-            }
-        });
 
         this.sprite.width = this.radius*2;
         this.sprite.height = this.radius*2;
@@ -90,10 +90,21 @@ BaseUnit.prototype.draw = function(stage, posShift){
     this.sprite.position.y = posCoord[1] - posShift[1];
 }
 
+BaseUnit.prototype.destroy = function(){
+    if(this.stage){
+        var index = this.stage.children.indexOf(this.sprite)
+        if(index !== -1){
+            this.stage.children.splice(index,1)
+        }
+    }
+
+    if(this.group){
+        this.group.remove(this);
+    }
+}
+
 BaseUnit.prototype.reverseVel = function(pos){
-    this.vel = new Vector({
-        coords: _.map(this.vel.coords, function(d){return -d;})
-    });
+    this.vel = new Vector(_.map(this.vel.coords, function(d){return -d;}));
 };
 
 // Changes unit's velocity to go towards a position vector

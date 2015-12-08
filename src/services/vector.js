@@ -1,17 +1,17 @@
-function Vector(options){
-    this.magnitude = options.magnitude || 0;
-    this.radians = options.radians || 0;
-
-    this.coords = options.coords || [Math.cos(this.radians)*this.magnitude, Math.sin(this.radians)*this.magnitude];
+function Vector(coords){
+    this.coords = coords;
 }
+
+Vector.radial = function(radians, magnitude){
+    return new Vector([Math.cos(radians)*magnitude, Math.sin(radians)*magnitude]);
+}
+
 
 
 Vector.add = function(v1, v2){
     var coord1 = v1.coords;
     var coord2 = v2.coords;
-    return new Vector({
-        coords: [coord1[0]+coord2[0], coord1[1]+coord2[1]]
-    });
+    return new Vector([coord1[0]+coord2[0], coord1[1]+coord2[1]]);
 };
 
 Vector.subtract = function(v1,v2){
@@ -33,9 +33,7 @@ Vector.prototype.setMagnitude = function(mag, v){
             newCoords[i] = this.coords[i]*ratio;
         }
 
-        return new Vector({
-            coords: newCoords,
-        });
+        return new Vector(newCoords);
     }else{
         for(var i=0,l=this.coords.length; i<l; i++){
             v.coords[i] = this.coords[i]*ratio;
@@ -72,14 +70,7 @@ Vector.prototype.subtract = function(v2, v){
 }
 
 Vector.prototype.distanceFrom = function(v2){
-    var v1Coord = this.coords;
-    var v2Coord = v2.coords;
-    var i, length;
-    var distance = 0;
-    for(i = 0, length = v1Coord.length; i < length; i++){
-        distance += Math.pow(v2Coord[i] - v1Coord[i], 2);
-    }
-    return Math.pow(distance, 0.5);
+    return Math.hypot(v2.coords[0] - this.coords[0], v2.coords[1] - this.coords[1])
 };
 
 Vector.prototype.inverse = function(){
@@ -87,9 +78,7 @@ Vector.prototype.inverse = function(){
     for(var i=0,l=this.coords.length; i<l; i++){
         newCoords[i] = -this.coords[i];
     }
-    return new Vector({
-        coords: newCoords,
-    })
+    return new Vector(newCoords)
 }
 
 module.exports = Vector;

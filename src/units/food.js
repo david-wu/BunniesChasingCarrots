@@ -5,14 +5,14 @@ UnitGroups.addUnitGroup({
     name: 'food',
 });
 
-
 function Food(options){
     BaseUnit.call(this, arguments);
     this.radius = 5;
     this.maxVelocity = 2;
     this.type = ['food'];
     this.spritePath = './carrot.png';
-    _.extend(this, options);
+    this.pos = options.pos;
+    this.parent = options.parent;
 
     UnitGroups.addUnit('food', this);
 }
@@ -26,13 +26,14 @@ Food.prototype.act = function(){
 }
 
 Food.prototype.wander = function(leashPos, leashStrength){
-    this.vel = new Vector({
-        radians: Math.PI*2*Math.random(),
-        magnitude: this.maxVelocity,
-    });
+    this.vel = Vector.radial(Math.PI*2*Math.random(), this.maxVelocity);
 
     if(leashPos){
-        this.vel = leashPos.subtract(this.pos).setMagnitude(this.maxVelocity*leashStrength).add(this.vel).setMagnitude(this.maxVelocity)
+        this.vel = leashPos
+            .subtract(this.pos)
+            .setMagnitude(this.maxVelocity*leashStrength)
+            .add(this.vel)
+            .setMagnitude(this.maxVelocity)
     }
 };
 

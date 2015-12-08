@@ -91,7 +91,7 @@ UserSelectionBox.prototype.mouseUp = function(e){
 
 UserSelectionBox.prototype.command = function(){
     _.each(this.selection, function(unit){
-        unit.goto(new Vector({coords:[0,0]}))
+        unit.goto(new Vector([0,0]))
         unit.act = _.noop;
         setTimeout(function(){
             delete unit.act;
