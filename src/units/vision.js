@@ -6,7 +6,7 @@ UnitGroups.addUnitGroup({
     name: 'hunterVision',
     parentStage: this.stage,
     collisionBounds: this.collisionBounds,
-    collisionCheckFrequency: 10,
+    collisionCheckFrequency: 5,
     draw: false,
 });
 
@@ -16,6 +16,7 @@ UnitGroups.groups.hunterVision.addCanCollideWith('food', 3);
 function Vision(options){
     BaseUnit.apply(this, arguments);
     var that = this;
+
     _.extend(this, {
         pos: undefined,
         color: 'blue',
@@ -30,6 +31,10 @@ function Vision(options){
 
 
 Vision.prototype = Object.create(BaseUnit.prototype);
+
+Vision.prototype.plan = _.noop;
+
+Vision.prototype.act = _.noop;
 
 Vision.prototype.draw = _.noop;
 

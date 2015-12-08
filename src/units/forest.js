@@ -2,7 +2,6 @@ var Food = require('./food.js');
 var BaseUnit = require('./_baseUnit.js');
 var UnitGroups = require('../engine/unitGroups.js');
 
-
 UnitGroups.addUnitGroup({
     name: 'forest',
     draw: false,

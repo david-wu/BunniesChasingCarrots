@@ -1,15 +1,14 @@
 /*
-    UnitGroups is a singleton/global that manages unitGroup instances
-    Units are automatically added into UnitGroups
-    Engine runs UnitGroup's collision, step, act, and draw steps
+    UnitGroups is a singleton that manages unitGroup instances
     Requires a PIXI renderer to be set
+    Units are added into UnitGroups
+    Engine runs UnitGroup's collision, step, act, and draw functions
 */
 
 var UnitGroup = require('./unitGroup.js');
 
 function UnitGroups(){
     this.groups = {};
-    this.groupsByDrawOrder = [];
     this.mapCenter = [0, 0];
     this.collisionBounds = [0, 0, 0, 0];
     this.stage = new PIXI.Container();
@@ -38,7 +37,7 @@ UnitGroups.prototype.checkCollisions = function(){
     var groupKeys = Object.keys(this.groups);
     for(var i=0, l=groupKeys.length; i<l; i++){
         var group = this.groups[groupKeys[i]];
-        if(group){
+        if(group.checkCollisions){
             group.checkCollisions();
         }
     }

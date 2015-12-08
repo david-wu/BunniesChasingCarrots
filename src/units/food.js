@@ -5,6 +5,7 @@ UnitGroups.addUnitGroup({
     name: 'food',
 });
 
+
 function Food(options){
     BaseUnit.call(this, arguments);
     this.radius = 5;

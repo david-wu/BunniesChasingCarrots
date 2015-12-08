@@ -7,7 +7,7 @@ UnitGroups.addUnitGroup({
     container: new PIXI.Container(),
 });
 
-UnitGroups.groups.hunter.addCanCollideWith('food');
+UnitGroups.groups.hunter.addCanCollideWith('food',2);
 
 
 function Hunter(options){
@@ -45,7 +45,7 @@ function Hunter(options){
 Hunter.prototype = Object.create(BaseUnit.prototype);
 
 Hunter.prototype.act = function(){
-    if(this.age%10 === 0){
+    if(this.age%5 === 0){
         this.hunt();
     }
 }
@@ -92,7 +92,7 @@ Hunter.prototype.hunt = function(){
     // Stop hunting if no candidates
     this.vel.coords = [0,0];
     this.hunting = false;
-    this.vision.radius += 5;
+    this.vision.radius += 10;
 };
 
 Hunter.prototype.huntUnit = function(unit){

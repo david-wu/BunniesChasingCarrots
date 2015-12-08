@@ -7,10 +7,10 @@ function Engine(){
 
 Engine.prototype.createInitialUnits = function(){
   this.createTestEcosystem(3, 200);
-  // this.createTestEcosystem(6, 400);
-  // this.createTestEcosystem(12, 600);
-  // this.createTestEcosystem(24, 800);
-  // this.createTestEcosystem(48, 1000);
+  this.createTestEcosystem(6, 400);
+  this.createTestEcosystem(12, 600);
+  this.createTestEcosystem(24, 800);
+  this.createTestEcosystem(48, 1000);
 };
 
 Engine.prototype.createTestEcosystem = function(count, radius){
