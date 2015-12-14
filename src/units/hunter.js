@@ -1,4 +1,4 @@
-var UnitGroups = require('../engine/unitGroups.js');
+var UnitGroups = require('../unitGroups');
 var BaseUnit = require('./_baseUnit.js');
 var Vision = require('./vision.js');
 

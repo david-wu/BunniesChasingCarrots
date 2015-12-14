@@ -1,3 +1,4 @@
+
 function Vector(coords){
     this.coords = coords;
 }
@@ -5,8 +6,6 @@ function Vector(coords){
 Vector.radial = function(radians, magnitude){
     return new Vector([Math.cos(radians)*magnitude, Math.sin(radians)*magnitude]);
 }
-
-
 
 Vector.add = function(v1, v2){
     var coord1 = v1.coords;

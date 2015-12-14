@@ -12,13 +12,16 @@ function UnitGroups(){
     this.groupsArr = [];
     this.mapCenter = [0, 0];
     this.collisionBounds = [0, 0, 0, 0];
-    this.stage = new PIXI.Container();
 }
 
 UnitGroups.prototype.setRenderer = function(renderer){
   this.renderer = renderer;
   this.modifyCollisionBounds([-this.renderer.width/2, -this.renderer.height/2, this.renderer.width/2, this.renderer.height/2]);
 };
+
+UnitGroups.prototype.setParentStage = function(stage){
+    this.stage = stage;
+}
 
 UnitGroups.prototype.modifyCollisionBounds = function(bounds){
     for(var i = 0, l = bounds.length; i < l; i++){
@@ -43,7 +46,7 @@ UnitGroups.prototype.tick = function(){
             group.draw(offset);
         }
     }
-    this.renderer.render(this.stage);
+    // this.renderer.render(this.stage);
 };
 
 UnitGroups.prototype.addUnitGroup = function(options){

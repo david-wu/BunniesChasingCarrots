@@ -1,5 +1,5 @@
-var BaseUnit = require('../units/_baseUnit.js');
-var UnitGroups = require('../engine/unitGroups.js');
+var BaseUnit = require('./_baseUnit.js');
+var UnitGroups = require('../unitGroups');
 
 UnitGroups.addUnitGroup({
     name: 'userSelectionBox',

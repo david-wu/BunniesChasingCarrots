@@ -1,3 +1,4 @@
+
 // Optimum depends on:
 // Area of smallest quadNode's bounds and size of units
 var maxDepth = 6;
@@ -127,5 +128,4 @@ function QuadTree(qnOptions){
 }
 
 module.exports = QuadTree;
-
 

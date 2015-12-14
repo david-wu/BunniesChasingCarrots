@@ -1,7 +1,10 @@
-var UnitGroups = require('./unitGroups.js');
-var UserSelectionBox = require('../models/userSelectionBox.js');
+var UnitGroups = require('../unitGroups');
+var UserSelectionBox = require('../units/userSelectionBox.js');
 
-function Engine(){
+function Engine(stage, renderer){
+
+  this.stage = stage;
+  this.renderer = renderer;
   this.createInitialUnits();
 }
 
@@ -34,6 +37,9 @@ Engine.prototype.start = function(){
 
 Engine.prototype.tick = function(){
   UnitGroups.tick();
+
+  // this.hud.draw();
+  this.renderer.render(this.stage);
   requestAnimationFrame(this.tick.bind(this));
 };
 

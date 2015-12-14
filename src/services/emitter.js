@@ -1,3 +1,4 @@
+
 function Emitter(obj){
     var callbacks = {};
 
@@ -9,7 +10,6 @@ function Emitter(obj){
 }
 
 // if emit returned a promise? Too slow :(
-// this thing is taking up 7% of my cpu
 function emit(callbacks, tag, payload){
     var i, l;
     var tagCallbacks = callbacks[tag];
