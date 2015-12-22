@@ -1,4 +1,4 @@
-var Emitter = require('../services/emitter.js');
+
 var unitId = 0;
 
 function BaseUnit(){

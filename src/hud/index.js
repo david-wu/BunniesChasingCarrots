@@ -1,13 +1,9 @@
 
 function Hud(rootStage, width, height){
 
-    console.log('hud')
-
     this.width = width;
     this.height = height;
     this.stage = new PIXI.Container();
-
-    this.rootStage.
 
 
     var graphics = new PIXI.Graphics();
@@ -19,8 +15,6 @@ function Hud(rootStage, width, height){
 
 
 Hud.prototype.draw = function(){
-    console.log('drawing')
-    // this.renderer.render(this.stage);
 
 }
 
