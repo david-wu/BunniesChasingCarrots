@@ -1,36 +1,22 @@
 _ = require('lodash');
 Vector = require('./services/vector.js');
 
-var rootStage = new PIXI.Container();
-var renderer = new Renderer();
-document.body.appendChild(renderer.view);
-
-// TODO: make UnitGroups not a singleton
-// creating units will need to be through a UnitGroup instance
-// the unit would then be linked to unitGroup
-// Also, unitGroups shouldn't need renderer
-// Engine should set collisionCheck dimensions
+var Renderer = require('./renderer');
 var UnitGroups = require('./unitGroups');
-UnitGroups.setParentStage(rootStage);
-UnitGroups.setRenderer(renderer);
-
 var Hud = require('./hud');
-var hud = new Hud(rootStage);
-
 var Engine = require('./engine');
-var eng = new Engine(rootStage, renderer);
-eng.start(UnitGroups);
+
+var configs = {
+    mapBounds: [-1500, -1500, 1500, 1500],
+};
+
+var renderer = new Renderer(configs.mapBounds);
+var unitGroups = new UnitGroups(configs.mapBounds)
+var hud = new Hud();
+var eng = new Engine(renderer, unitGroups, hud);
+eng.start(unitGroups);
 
 
-function Renderer(){
-    var renderDims = [3000, 3000];
-    var renderOptions = {
-        antialias: false,
-        transparent: true,
-        resolution: 1,
-    };
-    return PIXI.autoDetectRenderer(renderDims[0], renderDims[1], renderOptions);
-}
 
 
 

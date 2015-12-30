@@ -1,9 +1,4 @@
-var UnitGroups = require('../unitGroups');
 var BaseUnit = require('./_baseUnit.js')
-
-UnitGroups.addUnitGroup({
-    name: 'food',
-});
 
 function Food(options){
     BaseUnit.call(this, arguments);
@@ -13,8 +8,10 @@ function Food(options){
     this.spritePath = './carrot.png';
     this.pos = options.pos;
     this.parent = options.parent;
+}
 
-    UnitGroups.addUnit('food', this);
+Food.configs = {
+    name: 'food',
 }
 
 Food.prototype = Object.create(BaseUnit.prototype)

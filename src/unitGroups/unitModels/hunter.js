@@ -1,15 +1,5 @@
-var UnitGroups = require('../unitGroups');
 var BaseUnit = require('./_baseUnit.js');
 var Vision = require('./vision.js');
-
-UnitGroups.addUnitGroup({
-    name: 'hunter',
-    container: new PIXI.Container(),
-    collisionCheckFrequency: 2,
-});
-
-UnitGroups.groups.hunter.addCanCollideWith('food');
-
 
 function Hunter(options){
     var that = this;
@@ -25,12 +15,16 @@ function Hunter(options){
     });
     _.extend(this, options);
 
-
-    this.vision = new Vision({
+    this.vision = this.unitGroups.createUnit('hunterVision', {
         parent: this,
     });
+}
 
-    UnitGroups.addUnit('hunter', this);
+Hunter.configs = {
+    name: 'hunter',
+    container: new PIXI.Container(),
+    collisionCheckFrequency: 2,
+    canCollideWith: ['food'],
 }
 
 Hunter.prototype = Object.create(BaseUnit.prototype);
@@ -48,6 +42,7 @@ Hunter.prototype.act = function(){
 }
 
 Hunter.prototype.hunt = function(){
+    if(!this.vision.collisions.food){return}
     var that = this;
 
     // stops hunting previous target

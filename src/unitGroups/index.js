@@ -4,33 +4,47 @@
     Units are added into UnitGroups
     Engine runs UnitGroup's collision, step, act, and draw functions
 */
-
+var UnitModels = require('./unitModels');
 var UnitGroup = require('./unitGroup.js');
 
-function UnitGroups(){
+function UnitGroups(bounds){
     this.groups = {};
     this.groupsArr = [];
     this.mapCenter = [0, 0];
-    this.collisionBounds = [0, 0, 0, 0];
+    this.collisionBounds = bounds.slice();
+    this.stage = new PIXI.Container();
+
+
+    var that = this;
+    _.each(UnitModels, function(unitModel){
+        that.addUnitGroup(unitModel.configs);
+        _.each(unitModel.configs.canCollideWith, function(unitClassName){
+            that.groups[unitClassName].addCanCollideWith(unitClassName);
+        })
+    });
 }
 
-UnitGroups.prototype.setRenderer = function(renderer){
-  this.renderer = renderer;
-  this.modifyCollisionBounds([-this.renderer.width/2, -this.renderer.height/2, this.renderer.width/2, this.renderer.height/2]);
-};
+UnitGroups.prototype.createUnit = function(unitClassName, options){
+    options.unitGroups = options.unitGroups || this;
+    var unitModel = UnitModels[unitClassName];
 
-UnitGroups.prototype.setParentStage = function(stage){
-    this.stage = stage;
+    if(typeof unitModel !== 'function'){debugger;}
+    var unit = new unitModel(options);
+    this.addUnit(unitModel.configs.name, unit);
+    return unit;
 }
 
-UnitGroups.prototype.modifyCollisionBounds = function(bounds){
+UnitGroups.prototype.setCollisionBounds = function(bounds){
     for(var i = 0, l = bounds.length; i < l; i++){
         this.collisionBounds[i] = bounds[i];
     }
+    return this;
 };
 
 UnitGroups.prototype.tick = function(){
-    var offset = [this.mapCenter[0] - (this.renderer.width/2), this.mapCenter[1] - (this.renderer.height/2)];
+    var width = this.collisionBounds[2]-this.collisionBounds[0];
+    var height = this.collisionBounds[3]-this.collisionBounds[1];
+    var offset = [this.mapCenter[0] - (width/2), this.mapCenter[1] - (height/2)];
     for(var i=0, l=this.groupsArr.length; i<l; i++){
         var group = this.groupsArr[i];
         if(group.checkCollisions){
@@ -70,5 +84,5 @@ UnitGroups.prototype.convertNamesToGroups = function(array){
     }
 };
 
-module.exports = new UnitGroups();
+module.exports = UnitGroups;
 

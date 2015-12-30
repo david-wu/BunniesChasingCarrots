@@ -1,12 +1,5 @@
 var Food = require('./food.js');
 var BaseUnit = require('./_baseUnit.js');
-var UnitGroups = require('../unitGroups');
-
-UnitGroups.addUnitGroup({
-    name: 'forest',
-    draw: false,
-});
-
 
 function Forest(options){
     BaseUnit.apply(this, arguments);
@@ -18,9 +11,12 @@ function Forest(options){
         type: ['forest'],
         pos: Vector.radial(Math.random()*2*Math.PI, 200),
     });
-    _.extend(this, options)
+    _.extend(this, options);
+}
 
-    UnitGroups.addUnit('forest', this)
+Forest.configs = {
+    name: 'forest',
+    draw: false,
 }
 
 Forest.prototype = Object.create(BaseUnit.prototype)
@@ -38,8 +34,7 @@ Forest.prototype.step = function(){
 // Randomly spawns a food within forest
 Forest.prototype.spawnFood = function(units){
     var foodPos = this.pos.add(Vector.radial(Math.PI*2*Math.random(), this.radius*Math.random()));
-
-    new Food({
+    this.unitGroups.createUnit('food', {
         pos: foodPos,
         parent: this,
     });

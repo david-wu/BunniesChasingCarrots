@@ -1,10 +1,4 @@
 var BaseUnit = require('./_baseUnit.js');
-var UnitGroups = require('../unitGroups');
-
-UnitGroups.addUnitGroup({
-    name: 'userSelectionBox',
-    container: new PIXI.Container(),
-});
 
 function UserSelectionBox(options){
     BaseUnit.call(this, arguments);
@@ -15,28 +9,32 @@ function UserSelectionBox(options){
     _.extend(this, options);
 
 
-    UnitGroups.addUnit('userSelectionBox', this);
-    this.beginCollisionDetection();
+    // this.beginCollisionDetection();
 
 
-    UnitGroups.renderer.view.onmousedown = this.mouseDown.bind(this);
-    UnitGroups.renderer.view.onmousemove = this.mouseMove.bind(this);
-    UnitGroups.renderer.view.onmouseup = this.mouseUp.bind(this);
+    // UnitGroups.renderer.view.onmousedown = this.mouseDown.bind(this);
+    // UnitGroups.renderer.view.onmousemove = this.mouseMove.bind(this);
+    // UnitGroups.renderer.view.onmouseup = this.mouseUp.bind(this);
 
 }
 
 function getMousePos(e) {
-    var posx, posy;
-    if (!e) var e = window.event;
-    if (e.pageX || e.pageY){
-        posx = e.pageX;
-        posy = e.pageY;
-    }else if(e.clientX || e.clientY){
-        posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-        posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-    }
+    // var posx, posy;
+    // if (!e) var e = window.event;
+    // if (e.pageX || e.pageY){
+    //     posx = e.pageX;
+    //     posy = e.pageY;
+    // }else if(e.clientX || e.clientY){
+    //     posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+    //     posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+    // }
 
-    return [posx - e.target.offsetLeft - UnitGroups.renderer.width/2, posy - UnitGroups.renderer.height/2 - e.target.offsetTop];
+    // return [posx - e.target.offsetLeft - UnitGroups.renderer.width/2, posy - UnitGroups.renderer.height/2 - e.target.offsetTop];
+}
+
+UserSelectionBox.configs = {
+    name: 'userSelectionBox',
+    container: new PIXI.Container(),
 }
 
 UserSelectionBox.prototype = Object.create(BaseUnit.prototype);
@@ -125,8 +123,8 @@ UserSelectionBox.prototype.draw = function(stage, posShift){
 }
 
 UserSelectionBox.prototype.beginCollisionDetection = function(){
-    this.stopCollisionDetection();
-    this._stopDetection = UnitGroups.groups.userSelectionBox.addCanCollideWith(['hunter'], 1);
+    // this.stopCollisionDetection();
+    // this._stopDetection = UnitGroups.groups.userSelectionBox.addCanCollideWith(['hunter'], 1);
 };
 
 UserSelectionBox.prototype.stopCollisionDetection = function(){

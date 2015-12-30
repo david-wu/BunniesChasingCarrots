@@ -11,6 +11,7 @@ function Hud(rootStage, width, height){
     graphics.lineStyle(5, 0xFF0000);
     graphics.drawRect(0, 0, 300, 200);
     this.stage.addChild(graphics);
+    console.log(this.stage)
 }
 
 

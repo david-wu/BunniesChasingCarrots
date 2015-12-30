@@ -1,17 +1,4 @@
-var UnitGroups = require('../unitGroups');
 var BaseUnit = require('./_baseUnit.js');
-
-
-UnitGroups.addUnitGroup({
-    name: 'hunterVision',
-    parentStage: this.stage,
-    collisionBounds: this.collisionBounds,
-    collisionCheckFrequency: 10,
-    draw: false,
-});
-
-UnitGroups.groups.hunterVision.addCanCollideWith('food');
-
 
 function Vision(options){
     BaseUnit.apply(this, arguments);
@@ -26,9 +13,16 @@ function Vision(options){
     });
     _.extend(this, options);
 
-    UnitGroups.addUnit('hunterVision', this)
 }
 
+Vision.configs = {
+    name: 'hunterVision',
+    parentStage: this.stage,
+    canCollideWith: ['food'],
+    collisionBounds: this.collisionBounds,
+    collisionCheckFrequency: 10,
+    draw: false,
+}
 
 Vision.prototype = Object.create(BaseUnit.prototype);
 

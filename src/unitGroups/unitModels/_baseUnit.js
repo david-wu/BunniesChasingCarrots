@@ -72,8 +72,6 @@ BaseUnit.prototype.draw = function(stage, posShift){
         if(!this.spritePath){return;}
         this.sprite = new PIXI.Sprite.fromImage(this.spritePath);
 
-        this.sprite.width = this.radius*2;
-        this.sprite.height = this.radius*2;
         this.sprite.anchor.x = 0.5;
         this.sprite.anchor.y = 0.5;
         this.sprite.tint = this.tint || 0xFFFFFF;
@@ -85,9 +83,10 @@ BaseUnit.prototype.draw = function(stage, posShift){
     }else{
         this.sprite.tint = this.tint;
     }
-
     this.sprite.position.x = posCoord[0] - posShift[0];
     this.sprite.position.y = posCoord[1] - posShift[1];
+    this.sprite.width = this.radius*2;
+    this.sprite.height = this.radius*2;
 }
 
 BaseUnit.prototype.destroy = function(){
