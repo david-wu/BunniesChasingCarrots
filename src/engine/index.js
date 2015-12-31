@@ -4,9 +4,10 @@ function Engine(renderer, unitGroups, hud){
     this.unitGroups = unitGroups;
     this.hud = hud;
 
-    this.rootStage = new PIXI.Container();
-    this.rootStage.addChild(this.unitGroups.stage);
-    this.rootStage.addChild(this.hud.stage);
+    this.rootContainer = new PIXI.Container();
+    this.rootContainer.addChild(this.unitGroups.stage);
+    this.rootContainer.addChild(this.hud.stage);
+
 
     this.createInitialUnits();
 }
@@ -38,8 +39,10 @@ Engine.prototype.start = function(){
 };
 
 Engine.prototype.tick = function(){
+    // this.unitGroups.stage.position.x++;
+
     this.unitGroups.tick();
-    this.renderer.render(this.rootStage);
+    this.renderer.render(this.rootContainer);
     requestAnimationFrame(this.tick.bind(this));
 };
 

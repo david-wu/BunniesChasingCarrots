@@ -1,6 +1,5 @@
 
 var unitId = 0;
-
 function BaseUnit(){
     this.id = unitId++;
     this.age = 0;

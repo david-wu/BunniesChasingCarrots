@@ -24,6 +24,7 @@ UnitGroup.validate = function(options){
 }
 
 UnitGroup.prototype.addCanCollideWith = function(unitGroups, frequencyFactor){
+    if(!unitGroups){return;}
     if(!(unitGroups instanceof Array)){
         unitGroups = [unitGroups];
     }

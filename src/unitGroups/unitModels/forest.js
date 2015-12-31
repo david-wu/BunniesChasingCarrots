@@ -1,5 +1,5 @@
-var Food = require('./food.js');
 var BaseUnit = require('./_baseUnit.js');
+var Food = require('./food.js');
 
 function Forest(options){
     BaseUnit.apply(this, arguments);

@@ -1,6 +1,6 @@
 var BaseUnit = require('./_baseUnit.js');
 
-function Vision(options){
+function HunterVision(options){
     BaseUnit.apply(this, arguments);
     var that = this;
 
@@ -15,7 +15,7 @@ function Vision(options){
 
 }
 
-Vision.configs = {
+HunterVision.configs = {
     name: 'hunterVision',
     parentStage: this.stage,
     canCollideWith: ['food'],
@@ -24,14 +24,14 @@ Vision.configs = {
     draw: false,
 }
 
-Vision.prototype = Object.create(BaseUnit.prototype);
+HunterVision.prototype = Object.create(BaseUnit.prototype);
 
-Vision.prototype.plan = _.noop;
+HunterVision.prototype.plan = _.noop;
 
-Vision.prototype.act = _.noop;
+HunterVision.prototype.act = _.noop;
 
-Vision.prototype.draw = _.noop;
+HunterVision.prototype.draw = _.noop;
 
-Vision.prototype.step = _.noop;
+HunterVision.prototype.step = _.noop;
 
-module.exports = Vision;
+module.exports = HunterVision;

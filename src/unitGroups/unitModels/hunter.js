@@ -1,5 +1,5 @@
 var BaseUnit = require('./_baseUnit.js');
-var Vision = require('./vision.js');
+var Vision = require('./hunterVision.js');
 
 function Hunter(options){
     var that = this;

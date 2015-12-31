@@ -1,28 +1,22 @@
-/*
-    UnitGroups is a singleton that manages unitGroup instances
-    Requires a PIXI renderer to be set
-    Units are added into UnitGroups
-    Engine runs UnitGroup's collision, step, act, and draw functions
-*/
 var UnitModels = require('./unitModels');
 var UnitGroup = require('./unitGroup.js');
 
 function UnitGroups(bounds){
+    this.collisionBounds = bounds.slice();
     this.groups = {};
     this.groupsArr = [];
     this.mapCenter = [0, 0];
-    this.collisionBounds = bounds.slice();
     this.stage = new PIXI.Container();
 
+    this.initModels(UnitModels);
+}
 
+UnitGroups.prototype.initModels = function(models){
     var that = this;
     _.each(UnitModels, function(unitModel){
         that.addUnitGroup(unitModel.configs);
-        _.each(unitModel.configs.canCollideWith, function(unitClassName){
-            that.groups[unitClassName].addCanCollideWith(unitClassName);
-        })
     });
-}
+};
 
 UnitGroups.prototype.createUnit = function(unitClassName, options){
     options.unitGroups = options.unitGroups || this;
@@ -69,7 +63,9 @@ UnitGroups.prototype.addUnitGroup = function(options){
     options.collisionBounds = options.collisionBounds || this.collisionBounds;
 
     this.groups[options.name] = new UnitGroup(options);
-    this.groupsArr.push(this.groups[options.name]);
+    this.groups[options.name].addCanCollideWith(options.canCollideWith);
+
+    return this.groupsArr.push(this.groups[options.name]);
 };
 
 UnitGroups.prototype.addUnit = function(groupName, unit){
