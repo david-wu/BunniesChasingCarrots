@@ -1,28 +1,51 @@
+var Menu = require('./menu');
 
-function Hud(rootStage, width, height){
 
-    this.width = width;
-    this.height = height;
+function Hud(renderer){
+    this.renderer = renderer;
+
+
     this.stage = new PIXI.Container();
 
 
-    var graphics = new PIXI.Graphics();
-    graphics.beginFill(0xFFFF00);
-    graphics.lineStyle(5, 0xFF0000);
-    graphics.drawRect(0, 0, 300, 200);
+    this.menu = this.drawMenu();
+    this.stage.addChild(this.menu.items.graphics);
+}
 
-    graphics.interactive = true;
-    graphics.mouseover = function(d){
-        console.log('m', d)
-    }
-    this.stage.addChild(graphics);
+Hud.prototype.drawMenu = function(){
+    var that = this;
+    var items = [
+        {
+            name: 'Move',
+            click: function(e){
+                console.log('move!',e);
+            },
+        },
+        {
+            name: 'stop',
+            click: function(e){
+                console.log('stop!',e);
+            },
+        },
+        {
+            name: 'FullScreen',
+            click: function(e){
+                console.log('fullscreen')
+                that.renderer.toggleScreen();
+            },
+        },
+    ];
+    items.dims = [this.renderer.width, 200];
+
+    var menu = new Menu(items);
+    menu.drawItems();
+    return menu;
 }
 
 
-Hud.prototype.draw = function(){
+Hud.prototype.fullScreen = function(){
 
 }
-
 
 
 

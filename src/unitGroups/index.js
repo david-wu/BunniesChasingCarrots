@@ -1,8 +1,8 @@
 var UnitModels = require('./unitModels');
 var UnitGroup = require('./unitGroup.js');
 
-function UnitGroups(bounds){
-    this.collisionBounds = bounds.slice();
+function UnitGroups(options){
+    this.collisionBounds = options.mapBounds.slice();
     this.groups = {};
     this.groupsArr = [];
     this.mapCenter = [0, 0];

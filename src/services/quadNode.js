@@ -96,28 +96,24 @@ QuadNode.prototype.divideContents = function(){
 
         for(j=0,k=contentGroup.length; j < k; j++){
             unit = contentGroup[j];
-            if(unit.boxBounds === undefined){
-                unit.boxBounds = unit.hitBox();
-            }
+            unit.boxBounds = unit.boxBounds || unit.hitBox();
 
-            for(m=0,n=4; m < n; m++){
-                child = this.children[m];
-                if(child.contains(unit.boxBounds)){
-                    child.contentGroups[i].push(unit);
-                }
+            if(unit.boxBounds[0] < this.children[0].bounds[2] && unit.boxBounds[1] < this.children[0].bounds[3]){
+                this.children[0].contentGroups[i].push(unit);
+            }
+            if(unit.boxBounds[2] > this.children[1].bounds[0] && unit.boxBounds[1] < this.children[1].bounds[3]){
+                this.children[1].contentGroups[i].push(unit);
+            }
+            if(unit.boxBounds[0] < this.children[2].bounds[2] && unit.boxBounds[3] > this.children[2].bounds[1]){
+                this.children[2].contentGroups[i].push(unit);
+            }
+            if(unit.boxBounds[2] > this.children[3].bounds[0] && unit.boxBounds[3] > this.children[3].bounds[1]){
+                this.children[3].contentGroups[i].push(unit);
             }
         }
     }
 
-    this.contentGroups = [];
-};
-
-QuadNode.prototype.contains = function(unitBox){
-    if(unitBox[0] < this.bounds[2] && unitBox[2] > this.bounds[0]){
-        if(unitBox[1] < this.bounds[3] && unitBox[3] > this.bounds[1]){
-            return true;
-        }
-    }
+    this.contentGroups.length = 0;
 };
 
 function QuadTree(qnOptions){
