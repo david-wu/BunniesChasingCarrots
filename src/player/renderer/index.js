@@ -4,10 +4,10 @@ function Renderer(){
     var renderOptions = {
         antialias: false,
         resolution: 1,
+        transparent: true,
     };
 
     var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, renderOptions);
-    renderer.backgroundColor = 0x000000;
 
     renderer.view._onMouseDown = [];
     renderer.view.onmousedown = function(e){

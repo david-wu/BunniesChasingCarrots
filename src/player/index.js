@@ -112,7 +112,7 @@ Player.prototype.transformUnitGroups = function(){
 }
 
 Player.prototype.tick = function(){
-    // this.transformUnitGroups();
+    this.transformUnitGroups();
     this.unitGroups.tick();
     this.userSelectionBox.draw()
     this.renderer.render(this.rootContainer);
