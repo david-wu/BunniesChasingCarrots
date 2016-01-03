@@ -1,9 +1,8 @@
 var Menu = require('./menu');
 
 
-function Hud(renderer){
-    this.renderer = renderer;
-
+function Hud(options){
+    _.extend(this, options);
 
     this.stage = new PIXI.Container();
 
