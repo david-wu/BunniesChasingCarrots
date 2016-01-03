@@ -10,9 +10,9 @@ function UserSelectionBox(options){
     _.extend(this, options);
 
 
-    this.renderer.view.onmousedown = this.mouseDown.bind(this);
-    this.renderer.view.onmousemove = this.mouseMove.bind(this);
-    this.renderer.view.onmouseup = this.mouseUp.bind(this);
+    this.renderer.view._onMouseDown.push(this.mouseDown.bind(this));
+    this.renderer.view._onMouseMove.push(this.mouseMove.bind(this));
+    this.renderer.view._onMouseUp.push(this.mouseUp.bind(this));
 
 }
 

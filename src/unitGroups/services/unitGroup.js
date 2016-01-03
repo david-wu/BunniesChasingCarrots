@@ -1,5 +1,5 @@
 
-var QuadNode = require('../services/quadNode.js');
+var QuadNode = require('../../services/quadNode.js');
 
 function UnitGroup(options){
     UnitGroup.validate(options);
@@ -76,9 +76,9 @@ UnitGroup.prototype.act = function(){
     }
 };
 
-UnitGroup.prototype.draw = function(offset){
+UnitGroup.prototype.draw = function(){
     for(var i=0, l=this.units.length; i<l; i++){
-        this.units[i].draw(this.container, offset);
+        this.units[i].draw(this.container);
     }
 };
 
