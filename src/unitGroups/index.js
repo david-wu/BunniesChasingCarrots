@@ -1,5 +1,5 @@
 var UnitModels = require('./unitModels');
-var UnitGroup = require('./unitGroup.js');
+var UnitGroup = require('./services/unitGroup.js');
 
 function UnitGroups(options){
     this.collisionBounds = options.mapBounds.slice();

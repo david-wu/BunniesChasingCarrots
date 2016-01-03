@@ -4,21 +4,41 @@ function Renderer(){
     var renderOptions = {
         antialias: false,
         resolution: 1,
+        transparent: true,
     };
 
     var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, renderOptions);
-    renderer.backgroundColor = 0x000000;
+
+    renderer.view._onMouseDown = [];
+    renderer.view.onmousedown = function(e){
+        _.each(renderer.view._onMouseDown, function(fn){
+            fn(e);
+        });
+    };
+
+    renderer.view._onMouseMove = [];
+    renderer.view.onmousemove = function(e){
+        _.each(renderer.view._onMouseMove, function(fn){
+            fn(e);
+        });
+    };
+
+    renderer.view._onMouseUp = [];
+    renderer.view.onmouseup = function(e){
+        _.each(renderer.view._onMouseUp, function(fn){
+            fn(e);
+        });
+    };
+
     renderer.fullScreen = fullScreen;
     renderer.windowScreen = windowScreen;
     renderer.toggleScreen = toggleScreen;
     renderer.fullScreenEl = fullScreenEl;
-    renderer.resize = resize.bind(null, renderer);
-    resize(renderer);
+    renderer.autoResize = true;
 
-    // setInterval(function(){
-    //     resize(renderer)
-    // },500);
-    // window.addEventListener('resize', resize.bind(null, renderer), false);
+    window.addEventListener('resize', function(){
+        renderer.resize(window.innerWidth, window.innerHeight)
+    }, false);
 
     document.body.appendChild(renderer.view);
     document.body.style.overflow = 'hidden';
@@ -27,13 +47,6 @@ function Renderer(){
     return renderer;
 }
 
-
-function resize(renderer){
-    renderer.width = window.innerWidth;
-    renderer.height = window.innerHeight;
-    renderer.view.width = renderer.width;
-    renderer.view.height = renderer.height;
-}
 
 function toggleScreen(element){
     if(fullScreenEl()){

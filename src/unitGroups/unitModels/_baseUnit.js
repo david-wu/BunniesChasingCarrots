@@ -61,7 +61,7 @@ BaseUnit.prototype.distanceFrom = function(unit){
     return pos1.distanceFrom(pos2);
 };
 
-BaseUnit.prototype.draw = function(stage, posShift){
+BaseUnit.prototype.draw = function(stage){
     var that = this;
     var pos = this.pos || this.parent.pos;
     var posCoord = pos.coords;
@@ -82,8 +82,8 @@ BaseUnit.prototype.draw = function(stage, posShift){
     }else{
         this.sprite.tint = this.tint;
     }
-    this.sprite.position.x = posCoord[0] - posShift[0];
-    this.sprite.position.y = posCoord[1] - posShift[1];
+    this.sprite.position.x = posCoord[0];
+    this.sprite.position.y = posCoord[1];
     this.sprite.width = this.radius*2;
     this.sprite.height = this.radius*2;
 }
