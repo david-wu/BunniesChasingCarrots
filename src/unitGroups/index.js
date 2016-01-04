@@ -3,7 +3,7 @@ var UnitGroup = require('./services/unitGroup.js');
 
 function UnitGroups(options){
     this.groups = {};
-    this.collisionBounds = options.mapBounds.slice();
+    this.collisionBounds = options.collisionBounds;
     this.stage = new PIXI.Container();
     this.initModels();
 }
@@ -14,20 +14,19 @@ UnitGroups.prototype.tick = function(){
     });
 };
 
-UnitGroups.prototype.initModels = function(){
-    var that = this;
-    _.each(UnitModels, function(unitModel){
-        that.createUnitGroup(unitModel.configs);
-    });
+UnitGroups.prototype.addUnitGroup = function(unitGroup){
+    this.groups[unitGroup.name] = unitGroup;
+};
+
+UnitGroups.prototype.addUnit = function(groupName, unit){
+    this.groups[groupName].add(unit);
 };
 
 UnitGroups.prototype.createUnitGroup = function(options){
     options.parent = this;
-    this.addUnitGroup(new UnitGroup(options));
-};
-
-UnitGroups.prototype.addUnitGroup = function(unitGroup){
-    this.groups[unitGroup.name] = unitGroup;
+    var unitGroup = new UnitGroup(options);
+    this.addUnitGroup(unitGroup);
+    return unitGroup;
 };
 
 UnitGroups.prototype.createUnit = function(unitClassName, options){
@@ -38,8 +37,11 @@ UnitGroups.prototype.createUnit = function(unitClassName, options){
     return unit;
 };
 
-UnitGroups.prototype.addUnit = function(groupName, unit){
-    return this.groups[groupName].add(unit);
+UnitGroups.prototype.initModels = function(){
+    var that = this;
+    _.each(UnitModels, function(unitModel){
+        that.createUnitGroup(unitModel.configs);
+    });
 };
 
 module.exports = UnitGroups;

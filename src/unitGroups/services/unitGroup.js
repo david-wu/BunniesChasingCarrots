@@ -2,7 +2,6 @@
 var QuadNode = require('../../services/quadNode.js');
 
 function UnitGroup(options){
-    UnitGroup.validate(options);
     _.extend(this, options);
     _.defaults(this, {
         units: [],
@@ -11,17 +10,10 @@ function UnitGroup(options){
         collisionCheckFrequency: 1,
         collisionCheckCount: 0,
         container: new PIXI.ParticleContainer(),
-        drawLevel: 0,
     });
 
     this.parent.stage.addChild(this.container);
     this.addCanCollideWith(options.canCollideWith)
-}
-
-UnitGroup.validate = function(options){
-    if(!options.parent.stage){
-        console.log('unitGroups parent requires stage');
-    }
 }
 
 UnitGroup.prototype.tick = function(){

@@ -113,10 +113,10 @@ Player.prototype.attachViewScroller = function(){
 
 Player.prototype.createInitialUnits = function(){
     this.createTestEcosystem(5, 250);
-    this.createTestEcosystem(10, 500);
-    this.createTestEcosystem(20, 750);
-    this.createTestEcosystem(30, 1000);
-    this.createTestEcosystem(40, 1250);
+    // this.createTestEcosystem(10, 500);
+    // this.createTestEcosystem(20, 750);
+    // this.createTestEcosystem(30, 1000);
+    // this.createTestEcosystem(40, 1250);
 };
 
 Player.prototype.createTestEcosystem = function(count, radius){
