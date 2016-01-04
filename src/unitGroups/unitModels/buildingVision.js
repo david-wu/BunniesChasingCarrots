@@ -9,7 +9,6 @@ function HunterVision(options){
         opacity: 0.05,
         initialRadius: 100,
         radius: 100,
-        spritePath: './aoe.png',
     });
     _.extend(this, options);
 }
@@ -29,7 +28,7 @@ HunterVision.prototype.plan = _.noop;
 
 HunterVision.prototype.act = _.noop;
 
-// HunterVision.prototype.draw = _.noop;
+HunterVision.prototype.draw = _.noop;
 
 HunterVision.prototype.step = _.noop;
 

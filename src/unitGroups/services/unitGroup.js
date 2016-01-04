@@ -7,20 +7,28 @@ function UnitGroup(options){
     _.defaults(this, {
         units: [],
         canCollideWith: [],
-        collisionBounds: [],
+        collisionBounds: this.parent.collisionBounds,
         collisionCheckFrequency: 1,
         collisionCheckCount: 0,
         container: new PIXI.ParticleContainer(),
         drawLevel: 0,
     });
 
-    this.parentStage.addChild(this.container);
+    this.parent.stage.addChild(this.container);
+    this.addCanCollideWith(options.canCollideWith)
 }
 
 UnitGroup.validate = function(options){
-    if(!options.parentStage){
-        console.log('unitGroup requires parentStage');
+    if(!options.parent.stage){
+        console.log('unitGroups parent requires stage');
     }
+}
+
+UnitGroup.prototype.tick = function(){
+    this.checkCollisions();
+    this.act();
+    this.step();
+    this.draw();
 }
 
 UnitGroup.prototype.addCanCollideWith = function(unitGroups, frequencyFactor){
@@ -54,8 +62,11 @@ UnitGroup.prototype.removeCanCollideWidth = function(unitGroups){
 // Different groups it can collide with don't have its own collisionCheckFrequency
 UnitGroup.prototype.checkCollisions = function(){
     if(this.collisionCheckCount++ % this.collisionCheckFrequency !== 0){return;}
+    var that = this;
 
-    this.parent.convertNamesToGroups(this.canCollideWith);
+    _.each(this.canCollideWith, function(name, i){
+        that.canCollideWith[i] = that.parent.groups[name];
+    })
 
     for(var i=0, l=this.canCollideWith.length; i<l; i++){
         this.checkCollisionWithGroup(this.canCollideWith[i]);

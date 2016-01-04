@@ -83,7 +83,7 @@ UserSelectionBox.prototype.draw = function(){
 
     if(!this.sprite){
         this.sprite = new PIXI.Graphics();
-        this.sprite.beginFill(0xFFFF00)
+        this.sprite.beginFill(0x00FF00)
         this.sprite.drawRect(0, 0, 1, 1);
         this.sprite.alpha = 0.2
         this.stage.addChild(this.sprite);

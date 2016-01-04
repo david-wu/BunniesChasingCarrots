@@ -22,16 +22,28 @@ function Player(options){
     this.rootContainer.addChild(this.hud.stage);
     this.rootContainer.addChild(this.userSelectionBox.stage);
 
-    this.viewBounds = [-500, -500, 500, 500];
+    this.viewBounds = [-750, -750, 750, 750];
 
     this.createInitialUnits();
     this.attachViewScroller();
+    this.paused = false;
+}
+
+Player.prototype.tick = function(){
+    this.transformUnitGroups();
+    if(!this.paused){
+        this.unitGroups.tick();
+    }
+    this.userSelectionBox.draw();
+    this.hud.draw();
+    this.renderer.render(this.rootContainer);
 }
 
 Player.prototype.attachViewScroller = function(){
     var that = this;
 
     var scroll = {};
+    var zoom = {};
     document.onkeydown = function(e){
         if(e.keyCode === 87){
             scroll.up = true;
@@ -41,6 +53,10 @@ Player.prototype.attachViewScroller = function(){
             scroll.down = true;
         }else if(e.keyCode === 68){
             scroll.right = true;
+        }else if(e.keyCode === 81){
+            zoom.out = true;
+        }else if(e.keyCode === 69){
+            zoom.in = true;
         }
     };
     document.onkeyup = function(e){
@@ -52,6 +68,10 @@ Player.prototype.attachViewScroller = function(){
             scroll.down = false;
         }else if(e.keyCode === 68){
             scroll.right = false;
+        }else if(e.keyCode === 81){
+            zoom.out = false;
+        }else if(e.keyCode === 69){
+            zoom.in = false;
         }
     };
 
@@ -75,15 +95,28 @@ Player.prototype.attachViewScroller = function(){
             that.viewBounds[0]+=horizontalScrollAmount;
             that.viewBounds[2]+=horizontalScrollAmount;
         }
+        if(zoom.in){
+            that.viewBounds[1]+=verticalScrollAmount;
+            that.viewBounds[3]-=verticalScrollAmount;
+            that.viewBounds[0]+=horizontalScrollAmount;
+            that.viewBounds[2]-=horizontalScrollAmount;
+        }
+        if(zoom.out){
+            that.viewBounds[1]-=verticalScrollAmount;
+            that.viewBounds[3]+=verticalScrollAmount;
+            that.viewBounds[0]-=horizontalScrollAmount;
+            that.viewBounds[2]+=horizontalScrollAmount;
+        }
+
     }, 16)
 }
 
 Player.prototype.createInitialUnits = function(){
-    this.createTestEcosystem(3, 250);
-    // this.createTestEcosystem(10, 500);
-    // this.createTestEcosystem(20, 750);
-    // this.createTestEcosystem(40, 1000);
-    // this.createTestEcosystem(80, 1250);
+    this.createTestEcosystem(5, 250);
+    this.createTestEcosystem(10, 500);
+    this.createTestEcosystem(20, 750);
+    this.createTestEcosystem(30, 1000);
+    this.createTestEcosystem(40, 1250);
 };
 
 Player.prototype.createTestEcosystem = function(count, radius){
@@ -97,6 +130,10 @@ Player.prototype.createTestEcosystem = function(count, radius){
                 pos: forest.pos.add(Vector.radial(Math.random()*2*Math.PI, Math.random()*forest.radius)),
             });
         });
+        that.unitGroups.createUnit('tempBuilding', {
+            pos: forest.pos,
+        })
+
     });
 };
 
@@ -111,12 +148,6 @@ Player.prototype.transformUnitGroups = function(){
     this.unitGroups.stage.position.y = -this.viewBounds[1]*yScale;
 }
 
-Player.prototype.tick = function(){
-    this.transformUnitGroups();
-    this.unitGroups.tick();
-    this.userSelectionBox.draw()
-    this.renderer.render(this.rootContainer);
-}
 
 
 

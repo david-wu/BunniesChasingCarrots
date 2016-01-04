@@ -16,7 +16,7 @@ function Forest(options){
 
 Forest.configs = {
     name: 'forest',
-    draw: false,
+    draw: _.noop,
 }
 
 Forest.prototype = Object.create(BaseUnit.prototype)

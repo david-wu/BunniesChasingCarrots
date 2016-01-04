@@ -15,7 +15,7 @@ var paths = {
   htmlSrc: 'src/index.html',
   buildDir: 'dist/build',
   productionDir: './dist/production',
-  jsFileName: 'build.js'
+  jsFileName: 'app.js'
 };
 
 

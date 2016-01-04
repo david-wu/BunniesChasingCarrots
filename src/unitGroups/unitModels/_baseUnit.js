@@ -1,25 +1,18 @@
-
 var unitId = 0;
+
+
 function BaseUnit(){
-    this.id = unitId++;
-    this.age = 0;
-    this.radius = 2;
-    this.pos = new Vector([0, 0]),
-    this.vel = new Vector([0, 0]),
-    this.maxVelocity = 2;
-    this.drag = 0.1;
-    this.collisions = {};
+    _.extend(this, {
+        id: unitId++,
+        age: 0,
+        radius: 2,
+        pos: new Vector([0, 0]),
+        vel: new Vector([0, 0]),
+        maxVelocity: 2,
+        drag: 0.1,
+        collisions: {},
+    });
 }
-
-// For planning action trees
-BaseUnit.prototype.fitness = function(){
-
-}
-
-// Runs action root tree node
-BaseUnit.prototype.act = function(){
-
-};
 
 // Runs physical laws like updating vel, pos, drag
 BaseUnit.prototype.step = function(){
@@ -49,6 +42,8 @@ BaseUnit.prototype.checkCollisionCheap = function(unit){
 };
 
 // A more expensive method to detect collision within radius
+// Can make this much faster.
+// distance from requires square root, store the radiuses squared.
 BaseUnit.prototype.checkCollision = function(unit){
     if(this.distanceFrom(unit) < (this.radius + unit.radius)){
         this.collisions[unit.group.name][unit.id] = unit;

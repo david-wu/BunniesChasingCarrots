@@ -2,7 +2,6 @@ var BaseUnit = require('./_baseUnit.js');
 var Vision = require('./hunterVision.js');
 
 function Hunter(options){
-    var that = this;
     BaseUnit.apply(this, arguments);
     _.extend(this, {
         color: 'red',
