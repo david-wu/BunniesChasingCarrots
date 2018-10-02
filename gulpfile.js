@@ -9,6 +9,8 @@ var sass = require('gulp-sass');
 var concatCss = require('gulp-concat-css');
 var minifyCss = require('gulp-minify-css');
 var runSequence = require('run-sequence');
+const path = require('path');
+const execSync = require('child_process').execSync;
 
 var paths = {
   browserifyEntryPoint: './src/app.js',
@@ -93,9 +95,18 @@ gulp.task('buildUglyJs', function(){
     .pipe(gulp.dest(paths.buildDir));
 });
 
+gulp.task('copyOverAssets', function(){
+  const assetDir = path.join(__dirname, 'assets');
+  const buildDir = path.join(__dirname, paths.buildDir);
+  const productionDir = path.join(__dirname, paths.productionDir);
+  execSync(`mkdir -p ${buildDir}`);
+  execSync(`mkdir -p ${productionDir}`);
+  execSync(`cp ${assetDir}/* ${buildDir}`);
+  execSync(`cp ${assetDir}/* ${productionDir}`);
+});
 
-gulp.task('default', ['watchHtml', 'watchJs', 'watchScss']);
-gulp.task('build', ['copyHTML', 'buildUglyJs', 'buildSass']);
+gulp.task('default', ['watchHtml', 'watchJs', 'watchScss', 'copyOverAssets']);
+gulp.task('build', ['copyHTML', 'buildUglyJs', 'buildSass', 'copyOverAssets']);
 
 
 
